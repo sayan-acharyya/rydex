@@ -2,8 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion } from "motion/react";
-import { X } from 'lucide-react';
+import { Loader, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
+import { em } from 'motion/react-client';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
 
 type PropType = {
     open: boolean;
@@ -13,9 +17,42 @@ type PropType = {
 type StepType = "login" | "signup" | "otp";
 
 const AuthModel = ({ open, onClose }: PropType) => {
-    const [step, setStep] = useState<StepType>("login");
+
 
     if (!open) return null;
+
+    const [step, setStep] = useState<StepType>("login");
+
+    const [loading, setLoading] = useState(false);
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSignup = async () => {
+        setLoading(true)
+        try {
+            const { data } = await axios.post("/api/auth/register", {
+                name,
+                email,
+                password
+            });
+            setLoading(false)
+            toast.success("Enter OTP");
+            setStep("otp");
+
+            setName("");
+            setEmail("");
+            setPassword("");
+
+        } catch (error: any) {
+            const msg =
+                error?.response?.data?.message || "Signup failed";
+
+            toast.error(msg);
+            setLoading(false)
+        }
+    };
 
     return (
         <div
@@ -78,11 +115,15 @@ const AuthModel = ({ open, onClose }: PropType) => {
                     {step === "login" && (
                         <>
                             <input
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 type="email"
                                 placeholder="Email"
                                 className='w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/80'
                             />
                             <input
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 type="password"
                                 placeholder="Password"
                                 className='w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/80'
@@ -98,27 +139,44 @@ const AuthModel = ({ open, onClose }: PropType) => {
                     {step === "signup" && (
                         <>
                             <input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 type="text"
                                 placeholder="Full Name"
                                 className='w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/80'
                             />
                             <input
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 type="email"
                                 placeholder="Email"
                                 className='w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/80'
                             />
                             <input
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 type="password"
                                 placeholder="Password"
                                 className='w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/80'
                             />
 
-                            <button
-                                onClick={() => setStep("otp")}
-                                className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'
-                            >
-                                Continue
-                            </button>
+                            {loading ?
+                                <button
+                                    disabled
+                                    className='w-full py-3 rounded-xl bg-black text-white font-semibold 
+    flex items-center justify-center gap-2 
+    opacity-80 cursor-not-allowed'
+                                >
+                                    <Loader className='w-5 h-5 animate-spin' />
+                                    Processing...
+                                </button>
+                                :
+                                <button
+                                    onClick={handleSignup}
+                                    className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'
+                                >
+                                    Continue
+                                </button>}
                         </>
                     )}
 

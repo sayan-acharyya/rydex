@@ -2,11 +2,18 @@ import connectDb from "@/lib/db";
 import User from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs"
+ 
 
 export async function POST(req: NextRequest) {
     try {
         const { name, email, password } = await req.json();
         await connectDb();
+        if(!name || !email || !password){
+            return NextResponse.json(
+                { message: "fill all the feilds" },
+                { status: 400 }
+            )
+        }
 
         let user = await User.findOne({ email })
         if (user) {

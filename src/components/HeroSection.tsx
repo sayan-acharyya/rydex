@@ -4,14 +4,14 @@ import React from 'react'
 import { motion } from "motion/react"
 import { Bike, Bus, Car, Truck } from 'lucide-react'
 
-const HeroSection = () => {
+const HeroSection = ({ onAuthRequired }: { onAuthRequired: () => void }) => {
     return (
         <div className='relative min-h-screen w-full overflow-hidden'>
-            
+
             <div
                 style={{ backgroundImage: "url('/heroImage.jpg')" }}
                 className='absolute inset-0 bg-cover bg-center' />
-            
+
             <div className='absolute inset-0 bg-black/60' />
 
             <div className='relative z-10 min-h-screen flex flex-col 
@@ -64,6 +64,7 @@ const HeroSection = () => {
 
                 {/* Button */}
                 <motion.button
+                onClick={onAuthRequired}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className='mt-10 px-10 py-4 bg-white text-black
