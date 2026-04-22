@@ -7,7 +7,9 @@ type PropType = {
 
 const AuthModel = ({ open, onClose }: PropType) => {
     return (
-        <div> </div>
+        <div>
+
+        </div>
     );
 };
 

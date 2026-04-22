@@ -26,12 +26,12 @@ const Nav = () => {
                 {/* Logo */}
                 <div className="flex items-center gap-2">
                     <Image
-                        width={40}
-                        height={40}
+                        width={70}
+                        height={70}
                         priority
                         src={"/logo.jpeg"} 
                         alt='logo'
-                        className="rounded-full"
+                        
                     />
                 </div>
 
