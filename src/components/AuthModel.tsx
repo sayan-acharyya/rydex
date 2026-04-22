@@ -7,7 +7,9 @@ import Image from 'next/image';
 import { em } from 'motion/react-client';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-
+import { signIn } from 'next-auth/react';
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 type PropType = {
     open: boolean;
@@ -19,15 +21,28 @@ type StepType = "login" | "signup" | "otp";
 const AuthModel = ({ open, onClose }: PropType) => {
 
 
+
     if (!open) return null;
 
-    const [step, setStep] = useState<StepType>("login");
+    const [step, setStep] = useState<StepType>("otp");
 
     const [loading, setLoading] = useState(false);
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
+
+
+    const { data: session, status } = useSession();
+
+    useEffect(() => {
+        if (status === "authenticated") {
+            console.log("User Data:", session?.user);
+        }
+    }, [status, session]);
 
     const handleSignup = async () => {
         setLoading(true)
@@ -51,6 +66,47 @@ const AuthModel = ({ open, onClose }: PropType) => {
 
             toast.error(msg);
             setLoading(false)
+        }
+    };
+
+    const handleLogin = async () => {
+        setLoading(true);
+
+        try {
+            const res = await signIn("credentials", {
+                email,
+                password,
+                redirect: false
+            });
+
+            if (res?.error) {
+                toast.error("wrong credentials"); // ❌ wrong credentials
+            } else {
+                toast.success("Login Successful ");
+
+                setEmail("");
+                setPassword("");
+                onClose();
+            }
+
+        } catch (error) {
+            toast.error("Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            setLoading(true);
+
+            await signIn("google", {
+                callbackUrl: "/" // redirect after login
+            });
+
+        } catch (error) {
+            toast.error("Google login failed");
+            setLoading(false);
         }
     };
 
@@ -129,7 +185,9 @@ const AuthModel = ({ open, onClose }: PropType) => {
                                 className='w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/80'
                             />
 
-                            <button className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'>
+                            <button
+                                onClick={handleLogin}
+                                className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'>
                                 Sign In
                             </button>
                         </>
@@ -204,14 +262,30 @@ const AuthModel = ({ open, onClose }: PropType) => {
                                 <div className="flex-1 h-px bg-gray-200" />
                             </div>
 
-                            <button className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 bg-gray-100 hover:scale-[1.02] active:scale-[0.98] transition font-medium">
-                                <Image
-                                    src="/google.png"
-                                    alt="Google"
-                                    width={22}
-                                    height={22}
-                                />
-                                Continue with Google
+                            <button
+                                onClick={handleGoogleLogin}
+                                disabled={loading}
+                                className="w-full flex items-center justify-center gap-3 py-3 rounded-xl 
+    border border-gray-200 bg-gray-100 
+    hover:bg-gray-200 transition 
+    disabled:opacity-70 disabled:cursor-not-allowed"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader className="w-5 h-5 animate-spin" />
+                                        Connecting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Image
+                                            src="/google.png"
+                                            alt="Google"
+                                            width={22}
+                                            height={22}
+                                        />
+                                        Continue with Google
+                                    </>
+                                )}
                             </button>
                         </>
                     )}
