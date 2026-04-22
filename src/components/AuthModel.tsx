@@ -110,6 +110,21 @@ const AuthModel = ({ open, onClose }: PropType) => {
         }
     };
 
+    const handleChangeOtp = (index: number, value: string) => {
+        if (!/^[0-9]?$/.test(value)) return;
+        const updated = [...otp]
+        updated[index] = value;
+        setOtp(updated)
+
+        if (value && index < otp.length - 1) {
+            document.getElementById(`otp-${index+1}`)?.focus()
+        }
+
+         if (!value && index > 0) {
+            document.getElementById(`otp-${index-1}`)?.focus()
+        }
+    }
+
     return (
         <div
             onClick={onClose}
@@ -241,11 +256,26 @@ const AuthModel = ({ open, onClose }: PropType) => {
                     {/* OTP */}
                     {step === "otp" && (
                         <>
-                            <input
+                            {/* <input
                                 type="text"
                                 placeholder="Enter OTP"
                                 className='w-full px-4 py-3 rounded-xl border border-gray-200 text-center tracking-widest focus:outline-none focus:ring-2 focus:ring-black/80'
-                            />
+                            /> */}
+                            <div className='mt-6 flex justify-between gap-2'>
+                                {
+                                    otp.map((digit, i) => (
+                                        <input
+                                            key={i}
+                                            id={`otp-${i}`}
+                                            value={digit}
+                                            maxLength={1}
+                                            onChange={(e) => handleChangeOtp(i, e.target.value)}
+                                            className='w-10 h-12 sm:w-12 text-center text-lg font-semibold 
+                                            rounded-xl bg-white border border-black/20 outline-none'
+                                        />
+                                    ))
+                                }
+                            </div>
 
                             <button className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'>
                                 Verify OTP
@@ -334,3 +364,6 @@ const AuthModel = ({ open, onClose }: PropType) => {
 };
 
 export default AuthModel;
+
+
+//4:40:40
