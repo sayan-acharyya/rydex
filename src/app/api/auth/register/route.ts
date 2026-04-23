@@ -37,13 +37,13 @@ export async function POST(req: NextRequest) {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         if (user && !user.isEmailVerified) {
-            user.name = name,
-                user.password = password,
-                user.email = email,
-                user.otp = otp,
-                user.otpExpiresAt = otpExpiresAt
+            user.name = name;
+            user.password = hashedPassword;
+            user.email = email;
+            user.otp = otp;
+            user.otpExpiresAt = otpExpiresAt;
 
-            await user.save()
+            await user.save();
         } else {
             user = await User.create({
                 name,

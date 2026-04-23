@@ -57,7 +57,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
             setStep("otp");
 
             setName("");
-            setEmail("");
+             
             setPassword("");
 
         } catch (error: any) {
@@ -117,11 +117,33 @@ const AuthModel = ({ open, onClose }: PropType) => {
         setOtp(updated)
 
         if (value && index < otp.length - 1) {
-            document.getElementById(`otp-${index+1}`)?.focus()
+            document.getElementById(`otp-${index + 1}`)?.focus()
         }
 
-         if (!value && index > 0) {
-            document.getElementById(`otp-${index-1}`)?.focus()
+        if (!value && index > 0) {
+            document.getElementById(`otp-${index - 1}`)?.focus()
+        }
+    }
+
+    const handleVerifyEmail = async () => {
+
+
+        try {
+            const { data } = await axios.post("/api/auth/verify-email", {
+                email,
+                otp: otp.join("")
+            })
+
+
+            toast.success("email verified Successfully")
+            setStep("login")
+
+        } catch (error: any) {
+            const msg =
+                error?.response?.data?.message || "Signup failed";
+
+            toast.error(msg);
+
         }
     }
 
@@ -277,8 +299,10 @@ const AuthModel = ({ open, onClose }: PropType) => {
                                 }
                             </div>
 
-                            <button className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'>
-                                Verify OTP
+                            <button
+                                onClick={handleVerifyEmail}
+                                className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'>
+                                  Verify OTP
                             </button>
                         </>
                     )}

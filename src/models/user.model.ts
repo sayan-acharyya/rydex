@@ -39,10 +39,12 @@ const userSchema = new mongoose.Schema<IUser>(
       default: false
     },
     otp: {
-      type: String
+      type: String,
+      default: undefined
     },
     otpExpiresAt: {
-      type: Date
+      type: Date,
+      default: undefined
     }
   },
   { timestamps: true }
