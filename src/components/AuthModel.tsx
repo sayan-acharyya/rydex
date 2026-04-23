@@ -24,7 +24,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
 
     if (!open) return null;
 
-    const [step, setStep] = useState<StepType>("otp");
+    const [step, setStep] = useState<StepType>("login");
 
     const [loading, setLoading] = useState(false);
 
