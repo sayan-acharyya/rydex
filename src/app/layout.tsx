@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
 import Provider from "@/lib/Provider";
+import ReduxProvider from "@/redux/ReduxProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Provider>
-          {children}
+          <ReduxProvider>
+            {children}
+          </ReduxProvider>
         </Provider>
         <Toaster position="top-right" />
       </body>
