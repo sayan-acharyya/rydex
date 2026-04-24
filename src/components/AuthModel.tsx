@@ -39,6 +39,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
     const { data: session, status } = useSession();
 
     useEffect(() => {
+         console.log("Status:", status)
         if (status === "authenticated") {
             console.log("User Data:", session?.user);
         }
