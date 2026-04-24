@@ -123,3 +123,7 @@ const VehicleSlider = () => {
 }
 
 export default VehicleSlider
+
+
+
+//07:05:40
