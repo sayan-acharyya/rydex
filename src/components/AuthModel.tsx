@@ -39,7 +39,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
     const { data: session, status } = useSession();
 
     useEffect(() => {
-         console.log("Status:", status)
+        console.log("Status:", status)
         if (status === "authenticated") {
             console.log("User Data:", session?.user);
         }
@@ -58,7 +58,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
             setStep("otp");
 
             setName("");
-             
+
             setPassword("");
 
         } catch (error: any) {
@@ -225,8 +225,14 @@ const AuthModel = ({ open, onClose }: PropType) => {
 
                             <button
                                 onClick={handleLogin}
-                                className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'>
-                                Sign In
+                                disabled={loading}
+                                className={`w-full py-3 rounded-xl font-semibold transition
+    ${loading
+                                        ? "bg-black/70 cursor-not-allowed text-white"
+                                        : "bg-black text-white hover:opacity-90"
+                                    }`}
+                            >
+                                {loading ? "Signing in..." : "Sign In"}
                             </button>
                         </>
                     )}
@@ -303,7 +309,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
                             <button
                                 onClick={handleVerifyEmail}
                                 className='w-full py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition'>
-                                  Verify OTP
+                                Verify OTP
                             </button>
                         </>
                     )}
