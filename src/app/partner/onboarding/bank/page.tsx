@@ -120,7 +120,7 @@ const page = () => {
                         Bank details are verified before first payout.
                         This usually takes 24-48 hours
                     </p>
-                </div>
+                </div>     
 
                 <motion.div
                     whileHover={{ scale: 1.02 }}
