@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from "motion/react"
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import AuthModel from './AuthModel'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
@@ -13,6 +13,7 @@ import { signOut } from 'next-auth/react'
 import { setUserData } from '@/redux/userSlice'
 import toast from 'react-hot-toast'
 
+
 const Nav = () => {
     const Nav_Items = ["Home", "Bookings", "About Us", "Contact"]
     const pathName = usePathname()
@@ -20,6 +21,8 @@ const Nav = () => {
     const [profileOpen, setProfileOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+
+    const router = useRouter();
 
     const { userData } = useSelector((state: RootState) => state.user)
     const dispatch = useDispatch();
@@ -46,8 +49,8 @@ const Nav = () => {
     }
 
     // Dynamic Classes based on scroll
-    const navBgClass = scrolled 
-        ? "bg-white text-black shadow-lg border-gray-200" 
+    const navBgClass = scrolled
+        ? "bg-white text-black shadow-lg border-gray-200"
         : "bg-white/10 backdrop-blur-md border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.6)]";
 
     const profileBtnClass = scrolled
@@ -72,7 +75,7 @@ const Nav = () => {
                             priority
                             src={"/logo.jpeg"}
                             alt='logo'
-                             
+
                         />
                     </div>
 
@@ -87,10 +90,10 @@ const Nav = () => {
                                     href={href}
                                     key={index}
                                     className={`relative text-sm font-medium transition duration-300
-                                    ${active 
-                                        ? (scrolled ? "text-black" : "text-white") 
-                                        : (scrolled ? "text-gray-600 hover:text-black" : "text-gray-300 hover:text-white")
-                                    }`}
+                                    ${active
+                                            ? (scrolled ? "text-black" : "text-white")
+                                            : (scrolled ? "text-gray-600 hover:text-black" : "text-gray-300 hover:text-white")
+                                        }`}
                                 >
                                     {i}
                                     {active && (
@@ -138,7 +141,12 @@ const Nav = () => {
                                                 <p className='text-xs uppercase text-gray-500 mb-4'>{userData.role}</p>
 
                                                 {userData.role !== "partner" && (
-                                                    <div className='p-3 w-full flex items-center gap-3 py-3 hover:bg-gray-100 rounded-xl cursor-pointer'>
+                                                    <div
+                                                        onClick={() => {
+                                                            setProfileOpen(false);
+                                                            router.push("/partner/onboarding/vehicle");
+                                                        }}
+                                                        className='p-3 w-full flex items-center gap-3 py-3 hover:bg-gray-100 rounded-xl cursor-pointer'>
                                                         <div className='flex -space-x-2'>
                                                             <div className='w-6 h-6 rounded-full bg-black text-white flex items-center justify-center'><Bike size={14} /></div>
                                                             <div className='w-6 h-6 rounded-full bg-black text-white flex items-center justify-center'><Car size={14} /></div>
@@ -246,7 +254,12 @@ const Nav = () => {
                                     <p className="text-xs uppercase text-gray-500">{userData?.role}</p>
                                 </div>
                                 {userData?.role !== "partner" && (
-                                    <div className="flex items-center gap-3 px-3 py-3 hover:bg-gray-100 rounded-xl transition cursor-pointer">
+                                    <div
+                                        onClick={() => {
+                                            setProfileOpen(false);
+                                            router.push("/partner/onboarding/vehicle");
+                                        }}
+                                        className="flex items-center gap-3 px-3 py-3 hover:bg-gray-100 rounded-xl transition cursor-pointer">
                                         <div className="flex -space-x-2">
                                             <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center"><Bike size={12} /></div>
                                             <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center"><Car size={12} /></div>
