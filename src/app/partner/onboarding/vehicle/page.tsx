@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { motion } from "motion/react";
 import { ArrowLeft, Bike, Car, Package, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const page = () => {
     const router = useRouter();
@@ -44,7 +46,35 @@ const page = () => {
     const [vehicleType, setVehicleType] = useState("");
     const [vehicleNumber, setVehicleNumber] = useState("");
     const [vehicleModel, setVehicleModel] = useState("");
+    const [loading, setLoading] = useState(false);
 
+    const handleVehicle = async () => {
+        if (!vehicleType || !vehicleNumber || !vehicleModel) {
+            toast.error("All fields are required");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const { data } = await axios.post("/api/partner/onboarding/vehicle", {
+                type: vehicleType,
+                number: vehicleNumber,
+                vehicleModel: vehicleModel
+            });
+
+            toast.success("Added successfully");
+
+            // ✅ redirect after success
+            router.push("/partner/onboarding/documents");
+
+        } catch (error: any) {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className='min-h-screen bg-white flex items-center justify-center px-4'>
@@ -143,12 +173,13 @@ const page = () => {
                 </div>
 
                 <motion.button
+                    onClick={handleVehicle}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
                     className='mt-8 w-full h-14 rounded-2xl bg-black text-white font-semibold flex
                     items-center justify-center gap-2 disabled:opacity-40 transition'
                 >
-                    Continue
+                    {loading ? "Processing..." : "Continue"}
                 </motion.button>
 
             </motion.div>
