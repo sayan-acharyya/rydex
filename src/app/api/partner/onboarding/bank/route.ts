@@ -86,4 +86,4 @@ export async function GET(req: NextRequest) {
             { message: `get partner bank error ${error}` }
             , { status: 500 });
     }
-}
+}     
