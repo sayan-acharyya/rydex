@@ -44,7 +44,11 @@ export async function POST(req: Request) {
         const vehicleNumber = number.toUpperCase();
 
         // ✅ Check duplicate vehicle number
-        const duplicate = await Vehicle.findOne({ number: vehicleNumber });
+        const duplicate = await Vehicle.findOne({
+            number: vehicleNumber,
+            owner: { $ne: user._id } // exclude current user
+        });
+
         if (duplicate) {
             return Response.json(
                 { message: "Vehicle already registered" },
@@ -127,7 +131,7 @@ export async function GET(req: NextRequest) {
 
 
         return Response.json({ vehicle: null }, { status: 200 });
-        
+
     } catch (error) {
         console.error("Vehicle GET Error:", error);
 

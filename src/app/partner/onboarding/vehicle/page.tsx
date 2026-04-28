@@ -30,6 +30,12 @@ const page = () => {
             description: "4 wheeler"
         },
         {
+            id: "van",
+            label: "Van",
+            icon: Car,
+            description: "Mini transport"
+        },
+        {
             id: "loading",
             label: "Loading",
             icon: Package,
@@ -148,7 +154,7 @@ const page = () => {
                         <input
                             type="text"
                             value={vehicleNumber}
-                            onChange={(e) => setVehicleNumber(e.target.value)}
+                            onChange={(e) => setVehicleNumber(e.target.value.toUpperCase())}
                             placeholder='MH12AB1234'
                             id='vn'
                             className='mt-2 w-full border-b border-gray-300  
@@ -176,6 +182,7 @@ const page = () => {
                     onClick={handleVehicle}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
+                    disabled={loading}
                     className='mt-8 w-full h-14 rounded-2xl bg-black text-white font-semibold flex
                     items-center justify-center gap-2 disabled:opacity-40 transition'
                 >

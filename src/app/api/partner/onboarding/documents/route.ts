@@ -65,12 +65,15 @@ export async function POST(req: NextRequest) {
             updatePayload.rcUrl = url
         }
 
-        const partnerDocs = await PartnerDocs.findByIdAndUpdate(
+        const partnerDocs = await PartnerDocs.findOneAndUpdate(
             { owner: user._id },
-            { $set: updatePayload },
+            {
+                $set: updatePayload,
+                $setOnInsert: { owner: user._id } // 🔥 important
+            },
             { upsert: true, new: true }
-        )
-
+        );
+        
         if (user.partnerOnBoardingSteps < 2) {
             user.partnerOnBoardingSteps = 2;
         }
@@ -88,4 +91,3 @@ export async function POST(req: NextRequest) {
 }
 
 
- 

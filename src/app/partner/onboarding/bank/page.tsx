@@ -1,13 +1,63 @@
 
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from "motion/react";
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, BadgeCheck, CheckCircle, CreditCard, Landmark, Phone, Smartphone } from 'lucide-react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+// accountHolder,
+//     accountNumber,
+//     ifsc,
+//     upi,
+//     status: "added"
+
 
 
 const page = () => {
     const router = useRouter();
+
+    const [accountHolder, setAccountHolder] = useState("");
+    const [accountNumber, setAccountNumber] = useState("");
+    const [ifsc, setIfsc] = useState("");
+    const [upi, setUpi] = useState("");
+    const [mobileNumber, setMobileNumber] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleBank = async () => {
+        // ✅ basic validation
+        if (!accountHolder || !accountNumber || !ifsc || !mobileNumber) {
+            toast.error("Please fill all required fields");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            await axios.post("/api/partner/onboarding/bank", {
+                accountHolder,
+                accountNumber,
+                ifsc,
+                upi,
+                mobileNumber
+            });
+
+            toast.success("Bank details saved successfully");
+
+            // ✅ final onboarding step complete
+            // router.push("/partner/dashboard");
+
+        } catch (error: any) {
+            console.error(error);
+
+            toast.error(
+                error?.response?.data?.message || "Something went wrong"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <div className='min-h-screen bg-white flex items-center justify-center px-4'>
             <motion.div
@@ -46,6 +96,8 @@ const page = () => {
                             <input
                                 id='ahn'
                                 type='text'
+                                value={accountHolder}
+                                onChange={(e) => setAccountHolder(e.target.value)}
                                 placeholder='As per bank records'
                                 className='flex-1 border-b pb-2 text-sm focus:outline-none border-gray-300 focus:border-black'
                             />
@@ -61,6 +113,8 @@ const page = () => {
                             <input
                                 id='an'
                                 type='text'
+                                value={accountNumber}
+                                onChange={(e) => setAccountNumber(e.target.value)}
                                 placeholder='Enter account number'
                                 className='flex-1 border-b pb-2 text-sm focus:outline-none border-gray-300 focus:border-black'
                             />
@@ -76,6 +130,8 @@ const page = () => {
                             <input
                                 id='ahn'
                                 type='text'
+                                value={ifsc}
+                                onChange={(e) => setIfsc(e.target.value)}
                                 placeholder='HDFC0001234'
                                 className='flex-1 border-b pb-2 text-sm focus:outline-none border-gray-300 focus:border-black'
                             />
@@ -91,6 +147,8 @@ const page = () => {
                             <input
                                 id='ahn'
                                 type='text'
+                                value={mobileNumber}
+                                onChange={(e) => setMobileNumber(e.target.value)}
                                 placeholder='10 digit mobile number'
                                 className='flex-1 border-b pb-2 text-sm focus:outline-none border-gray-300 focus:border-black'
                             />
@@ -106,6 +164,8 @@ const page = () => {
                             <input
                                 id='ahn'
                                 type='text'
+                                value={upi}
+                                onChange={(e) => setUpi(e.target.value)}
                                 placeholder='name@upi'
                                 className='flex-1 border-b pb-2 text-sm focus:outline-none border-gray-300 focus:border-black'
                             />
@@ -120,16 +180,18 @@ const page = () => {
                         Bank details are verified before first payout.
                         This usually takes 24-48 hours
                     </p>
-                </div>     
+                </div>
 
-                <motion.div
+                <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                     className='mt-8 w-full h-14 rounded-2xl bg-black text-white font-semibold flex
+                    disabled={loading}
+                    onClick={handleBank}
+                    className='mt-8 w-full h-14 rounded-2xl bg-black text-white font-semibold flex
                     items-center justify-center gap-2 disabled:opacity-40 transition'
                 >
-                    Continue
-                </motion.div>
+                    {loading ? "Uploading..." : "Continue"}
+                </motion.button>
 
             </motion.div>
         </div >
