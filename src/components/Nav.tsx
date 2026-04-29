@@ -12,9 +12,10 @@ import { Bike, Car, ChevronRight, LogOut, Menu, Truck, X } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { setUserData } from '@/redux/userSlice'
 import toast from 'react-hot-toast'
+import { auth } from '@/auth'
 
 
-const Nav = () => {
+const Nav =   () => {
     const Nav_Items = ["Home", "Bookings", "About Us", "Contact"]
     const pathName = usePathname()
     const [authOpen, setAuthOpen] = useState(false);
@@ -48,10 +49,12 @@ const Nav = () => {
         toast.success("Log out successfully")
     }
 
+    
+
     // Dynamic Classes based on scroll
     const navBgClass = scrolled
         ? "bg-white text-black shadow-lg border-gray-200"
-        : "bg-white/10 backdrop-blur-md border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.6)]";
+        : `${userData?.role == "partner" ? "bg-black":"bg-black/50"}  backdrop-blur-md border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.6)]`;
 
     const profileBtnClass = scrolled
         ? "bg-black text-white" // Black bg, white text on scroll
@@ -140,7 +143,7 @@ const Nav = () => {
                                                 <p className='font-semibold text-lg'>{userData.name} </p>
                                                 <p className='text-xs uppercase text-gray-500 mb-4'>{userData.role}</p>
 
-                                                {userData.role !== "partner" && (
+                                                {userData.role !== "partner" && userData.role !== "admin" && (
                                                     <div
                                                         onClick={() => {
                                                             setProfileOpen(false);

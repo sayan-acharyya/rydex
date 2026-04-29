@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { signIn } from 'next-auth/react';
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { useRouter } from 'next/navigation';
 
 type PropType = {
     open: boolean;
@@ -21,7 +22,7 @@ type StepType = "login" | "signup" | "otp";
 const AuthModel = ({ open, onClose }: PropType) => {
 
 
-
+    const router = useRouter();
     if (!open) return null;
 
     const [step, setStep] = useState<StepType>("login");
@@ -88,6 +89,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
                 setEmail("");
                 setPassword("");
                 onClose();
+                router.refresh();
             }
 
         } catch (error) {
@@ -104,7 +106,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
             await signIn("google", {
                 callbackUrl: "/" // redirect after login
             });
-
+            router.refresh();
         } catch (error) {
             toast.error("Google login failed");
             setLoading(false);
