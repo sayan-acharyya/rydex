@@ -47,6 +47,7 @@ const Nav =   () => {
         dispatch(setUserData(null))
         setProfileOpen(false)
         toast.success("Log out successfully")
+        router.refresh();
     }
 
     
