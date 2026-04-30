@@ -11,7 +11,7 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <div className="w-full min-h-screen bg-white">
+    <div className="w-full min-h-screen  bg-white">
       
       <Nav />
 
