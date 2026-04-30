@@ -55,7 +55,7 @@ const Nav =   () => {
     // Dynamic Classes based on scroll
     const navBgClass = scrolled
         ? "bg-white text-black shadow-lg border-gray-200"
-        : `${userData?.role == "partner" ? "bg-black":"bg-black/50"}  backdrop-blur-md border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.6)]`;
+        : `${  userData?.role === "partner" || userData?.role === "admin" ? "bg-black":"bg-black/50"}  backdrop-blur-md border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.6)]`;
 
     const profileBtnClass = scrolled
         ? "bg-black text-white" // Black bg, white text on scroll

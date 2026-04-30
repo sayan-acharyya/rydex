@@ -1,13 +1,16 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from "motion/react";
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, BadgeCheck, CheckCircle, CreditCard, Landmark, Phone } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 const page = () => {
     const router = useRouter();
+    const { userData } = useSelector((state: RootState) => state.user)
 
     const [accountHolder, setAccountHolder] = useState("");
     const [accountNumber, setAccountNumber] = useState("");
@@ -57,6 +60,7 @@ const page = () => {
             });
 
             toast.success("Bank details saved successfully");
+            router.push("/");
 
         } catch (error: any) {
             toast.error(error?.response?.data?.message || "Something went wrong");
@@ -64,6 +68,26 @@ const page = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const handleGetVehicle = async () => {
+            try {
+                const { data } = await axios.get("/api/partner/onboarding/bank");
+                setAccountHolder(data.partnerBank.accountHolder);
+                setAccountNumber(data.partnerBank.accountNumber);
+                setIfsc(data.partnerBank.ifsc);
+                setMobileNumber(data.mobileNumber);
+                setUpi(data.partnerBank.upi);
+
+                console.log(data);
+
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        handleGetVehicle();
+    }, [])
 
     return (
         <div className='min-h-screen bg-white flex items-center justify-center px-4'>
