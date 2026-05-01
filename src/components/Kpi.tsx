@@ -90,4 +90,3 @@ const Kpi = ({ label, value, icon: Icon, varient }: any) => {
 export default Kpi;
 
 
-//2:13:40
