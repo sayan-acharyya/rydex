@@ -15,7 +15,7 @@ import toast from 'react-hot-toast'
 import { auth } from '@/auth'
 
 
-const Nav =   () => {
+const Nav = () => {
     const Nav_Items = ["Home", "Bookings", "About Us", "Contact"]
     const pathName = usePathname()
     const [authOpen, setAuthOpen] = useState(false);
@@ -50,12 +50,12 @@ const Nav =   () => {
         router.refresh();
     }
 
-    
+
 
     // Dynamic Classes based on scroll
     const navBgClass = scrolled
         ? "bg-white text-black shadow-lg border-gray-200"
-        : `${  userData?.role === "partner" || userData?.role === "admin" ? "bg-black":"bg-black/50"}  backdrop-blur-md border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.6)]`;
+        : `${userData?.role === "partner" || userData?.role === "admin" ? "bg-black" : "bg-black"}  backdrop-blur-md border-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.6)]`;
 
     const profileBtnClass = scrolled
         ? "bg-black text-white" // Black bg, white text on scroll
@@ -73,14 +73,21 @@ const Nav =   () => {
 
                     {/* Logo */}
                     <div className="flex items-center gap-2">
-                        <Image
+                        {scrolled ? <Image
+                            width={80}
+                            height={80}
+                            priority
+                            src={"/logo3.png"}
+                            alt='logo'
+
+                        /> : <Image
                             width={80}
                             height={80}
                             priority
                             src={"/logo.jpeg"}
                             alt='logo'
 
-                        />
+                        />}
                     </div>
 
                     {/* Nav Links */}

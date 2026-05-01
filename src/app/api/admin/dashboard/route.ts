@@ -49,10 +49,12 @@ export async function GET(req: NextRequest) {
         }))
 
         return NextResponse.json({
-            totalPartners,
-            totalPendingPartners,
-            totalApprovedPartners,
-            totalRejectedPartners,
+            stats: {
+                totalPartners,
+                totalPendingPartners,
+                totalApprovedPartners,
+                totalRejectedPartners,
+            },
             pendingPartnerUsers,
             pendingPartnersReviews
 
@@ -68,4 +70,3 @@ export async function GET(req: NextRequest) {
     }
 }
 
-//1:39:00
