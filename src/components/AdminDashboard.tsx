@@ -174,7 +174,27 @@ const AdminDashboard = () => {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className='space-y-3'
           >
-            {activeTab == "partner" && <ContentList />}
+            {activeTab == "partner" &&
+              <ContentList
+                data={partnerReviews}
+                type={"partner"}
+              />
+            }
+
+            {activeTab == "kyc" &&
+              <ContentList
+                data={pendingKyc}
+                type={"kyc"}
+              />
+            }
+
+            {activeTab == "vehicle" &&
+              <ContentList
+                data={vehicleReviews}
+                type={"vehicle"}
+              />
+            }
+
           </motion.div>
         </AnimatePresence>
 
