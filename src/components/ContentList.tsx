@@ -77,4 +77,7 @@ const ContentList = ({ data, type }: any) => {
     )
 }
 
-export default ContentList
+export default ContentList;
+
+
+//2:48:00
