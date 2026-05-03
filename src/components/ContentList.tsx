@@ -80,4 +80,4 @@ const ContentList = ({ data, type }: any) => {
 export default ContentList;
 
 
-//2:48:00
+ 
