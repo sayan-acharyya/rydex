@@ -3,8 +3,10 @@
 import React from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { ArrowRight, CheckCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const ContentList = ({ data, type }: any) => {
+    const router = useRouter();
 
     if (data.length == 0) {
         return (
@@ -41,6 +43,7 @@ const ContentList = ({ data, type }: any) => {
 
                     return (
                         <motion.div
+                            key={index}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
@@ -61,11 +64,15 @@ const ContentList = ({ data, type }: any) => {
 
                             <div className='shrink-0'>
                                 <motion.button
+                                    onClick={() => {
+                                        type == "partner" ? router.push(`/admin/reviews/partner/${item._id}`)
+                                            : router.push(`/admin/reviews/vehicle/${item._id}`)
+                                    }}
                                     whileTap={{ scale: 0.96 }}
                                     className='flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950
                                     hover:bg-neutral-800 text-white text-sm font-semibold transition-colors'
                                 >
-                                    Review <ArrowRight size={15}/>
+                                    Review <ArrowRight size={15} />
                                 </motion.button>
                             </div>
 
@@ -80,4 +87,3 @@ const ContentList = ({ data, type }: any) => {
 export default ContentList;
 
 
- 

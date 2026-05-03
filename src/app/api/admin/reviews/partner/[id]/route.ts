@@ -35,6 +35,7 @@ export async function GET(
 
         return Response.json(
             {
+                partner,
                 vehicle: vehicle || null,
                 documents: documents || null,
                 bank: bank || null
@@ -48,5 +49,3 @@ export async function GET(
             , { status: 500 });
     }
 }
-
-//2:57:55
