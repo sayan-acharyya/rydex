@@ -1,11 +1,15 @@
 'use client'
 import AnimatedCard from '@/components/AnimatedCard'
+import DocPreview from '@/components/DocPreview'
+import { IPartnerBank } from '@/models/partnerBank.model'
+import { IPartnerDocs } from '@/models/partnerDocs.model'
 import { IUser } from '@/models/user.model'
 import { IVehicle } from '@/models/vehicle.model'
 import axios from 'axios'
-import { ArrowLeft, Car, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { ArrowLeft, Car, CheckCircle, Clock, FileText, Landmark, ShieldCheck, XCircle } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 
 
 
@@ -15,13 +19,17 @@ const page = () => {
   const [data, setData] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [vehicleDetails, setVehicleDetails] = useState<IVehicle | null>(null);
-
+  const [partnerDocs, setPartnerDocs] = useState<IPartnerDocs | null>(null);
+  const [partnerBank, setPartnerBank] = useState<IPartnerBank | null>(null);
+  const [showApproved,setShowApproved] = useState();
 
   const handleGetPartner = async () => {
     try {
       const { data } = await axios.get(`/api/admin/reviews/partner/${id}`);
       setData(data.partner);
       setVehicleDetails(data.vehicle);
+      setPartnerDocs(data.documents);
+      setPartnerBank(data.bank);
       setLoading(false);
 
     } catch (error) {
@@ -104,7 +112,9 @@ const page = () => {
       </div>
 
       <main className='max-w-7xl mx-auto px-4 py-12 grid lg:grid-cols-3 gap-10'>
+
         <div className='lg:col-span-2 space-y-8 '>
+          {/* vehicle details */}
           <AnimatedCard title="Vehicle Details" icon={<Car size={18} />}>
             <div className='flex justify-between text-sm'>
               <span className='text-gray-500'>Vehicle Type:</span>
@@ -114,19 +124,77 @@ const page = () => {
               <span className='text-gray-500'>Registration Number:</span>
               <span className='font-semibold text-md'>{vehicleDetails?.number || "-"}</span>
             </div>
-             <div className='flex justify-between text-sm'>
+            <div className='flex justify-between text-sm'>
               <span className='text-gray-500'>Model:</span>
               <span className='font-semibold text-md'>{vehicleDetails?.vehicleModel || "-"}</span>
             </div>
           </AnimatedCard>
+          {/* partner docs */}
+          <AnimatedCard title="Documents" icon={<FileText size={18} />}>
+            <div className='grid grid-cols-1 sm:grid-cols-3 gap-6'>
+              <DocPreview label={"Aadhaar"} url={partnerDocs?.aadharUrl} />
+              <DocPreview label={"Driving License"} url={partnerDocs?.licenseUrl} />
+              <DocPreview label={"Registration Certificate"} url={partnerDocs?.rcUrl} />
+            </div>
+          </AnimatedCard>
+        </div>
+
+        <div className='space-y-8'>
+          <AnimatedCard title={'Bank Details'} icon={<Landmark size={18} />}>
+            <div className='flex justify-between text-sm'>
+              <span className='text-gray-500'>Account Hodel:</span>
+              <span className='font-semibold text-lg'>{partnerBank?.accountHolder || "-"}</span>
+            </div>
+            <div className='flex justify-between text-sm'>
+              <span className='text-gray-500'>Account Number:</span>
+              <span className='font-semibold text-md'>{partnerBank?.accountNumber || "-"}</span>
+            </div>
+            <div className='flex justify-between text-sm'>
+              <span className='text-gray-500'>IFSC Code:</span>
+              <span className='font-semibold text-md'>{partnerBank?.ifsc || "-"}</span>
+            </div>
+            <div className='flex justify-between text-sm'>
+              <span className='text-gray-500'>UPI:</span>
+              <span className='font-semibold text-md'>{partnerBank?.upi || "-"}</span>
+            </div>
+            <div className='flex justify-between text-sm'>
+              <span className='text-gray-500'>Mobile Number:</span>
+              <span className='font-semibold text-md'>{data?.mobileNumber || "-"}</span>
+            </div>
+          </AnimatedCard>
+          {data?.partnerStatus == "pending" && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className='bg-white rounded-4xl p-8 shadow-xl space-y-6'
+            >
+              <div className='flex items-center gap-2 font-semibold'>
+                <ShieldCheck size={18} />
+                Admin Check
+              </div>
+              <p className='text-sm text-gray-500'>
+                Verify documents carefully before approving
+              </p>
+              <div className='flex flex-col gap-4'>
+                <button
+                  className='py-3   rounded-2xl bg-linear-to-r from-black to-gray-800 text-white 
+              font-semibold hover:opacity-90 transition'
+                >
+                  Approve
+                </button>
+                <button className='py-3 rounded-2xl bg-gray-200  font-semibold hover:bg-gray-300 transition'>
+                  Reject
+                </button>
+              </div>
+            </motion.div>
+          )}
         </div>
       </main>
- 
+
     </div>
   )
 }
 
 export default page;
 
-
-//3:24:00
+//3:45:45
