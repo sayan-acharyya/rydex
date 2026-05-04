@@ -10,6 +10,7 @@ import { ArrowLeft, Car, CheckCircle, Clock, FileText, Landmark, ShieldCheck, XC
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import toast from 'react-hot-toast'
 
 
 
@@ -21,7 +22,10 @@ const page = () => {
   const [vehicleDetails, setVehicleDetails] = useState<IVehicle | null>(null);
   const [partnerDocs, setPartnerDocs] = useState<IPartnerDocs | null>(null);
   const [partnerBank, setPartnerBank] = useState<IPartnerBank | null>(null);
-  const [showApproved,setShowApproved] = useState();
+  const [showApproved, setShowApproved] = useState(false);
+  const [showReject, setShowReject] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+
 
   const handleGetPartner = async () => {
     try {
@@ -38,9 +42,39 @@ const page = () => {
     }
   }
 
+
+  const handleApproved = async () => {
+    try {
+      const { data } = await axios.get(`/api/admin/reviews/partner/${id}/approve`);
+      toast.success("Partner approved successfully");
+      setShowApproved(false);
+      await handleGetPartner();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to approve partner ");
+    }
+  }
+  
+  const handleRejected = async () => {
+    try {
+      const { data } = await axios.post(`/api/admin/reviews/partner/${id}/reject`, { rejectionReason });
+      toast.success("Partner rejected successfully");
+      setShowReject(false);
+      await handleGetPartner();
+       
+      
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to rejected partner ");
+    }
+  }
+
   useEffect(() => {
     handleGetPartner();
   }, []);
+
+
+
 
   if (loading) {
     return (
@@ -177,12 +211,15 @@ const page = () => {
               </p>
               <div className='flex flex-col gap-4'>
                 <button
+                  onClick={() => setShowApproved(true)}
                   className='py-3   rounded-2xl bg-linear-to-r from-black to-gray-800 text-white 
               font-semibold hover:opacity-90 transition'
                 >
                   Approve
                 </button>
-                <button className='py-3 rounded-2xl bg-gray-200  font-semibold hover:bg-gray-300 transition'>
+                <button
+                  onClick={() => setShowReject(true)}
+                  className='py-3 rounded-2xl bg-gray-200  font-semibold hover:bg-gray-300 transition'>
                   Reject
                 </button>
               </div>
@@ -191,10 +228,87 @@ const page = () => {
         </div>
       </main>
 
+      {/* confermatin model */}
+      {
+        <AnimatePresence>
+          {
+            showApproved && (
+              <motion.div
+                className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center
+                justify-center px-4'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  className='bg-white rounded-3xl p-6 w-full max-w-sm'
+                >
+                  <h2 className='text-lg font-bold'>Approved Partner ?</h2>
+                  <p className='text-sm text-gray-500 mt-2'>Confirm all information has been verified.</p>
+
+                  <div className='flex gap-3 mt-6'>
+                    <button
+                      onClick={() => setShowApproved(false)}
+                      className='flex-1 py-2 rounded-xl bg-gray-200 hover:bg-gray-300'>Cancle</button>
+                    <button
+                      onClick={handleApproved}
+                      className='flex-1 py-2 rounded-xl bg-gray-950 hover:bg-gray-900 text-white'>Yes, Approved</button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )
+          }
+        </AnimatePresence>
+      }
+
+      {/* rejction model */}
+      {
+        <AnimatePresence>
+          {
+            showReject && (
+              <motion.div
+                className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center
+                justify-center px-4'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  className='bg-white rounded-3xl p-6 w-full max-w-sm'
+                >
+                  <h2 className='text-lg font-bold'>Reject Partner ?</h2>
+                  <p className='text-sm text-gray-500 mt-2' >
+                    <textarea
+                      value={rejectionReason}
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                      placeholder='Enter rejection reason (required)'
+                      className='w-full mt-3 border rounded-xl p-3 text-sm border-gray-500'
+                    />
+                  </p>
+
+                  <div className='flex gap-3 mt-6'>
+                    <button
+                      onClick={() => setShowReject(false)}
+                      className='flex-1 py-2 rounded-xl bg-gray-200 hover:bg-gray-300'>Cancle</button>
+                    <button
+                      onClick={handleRejected}
+                      className='flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white'>
+                      Reject
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )
+          }
+        </AnimatePresence>
+      }
     </div>
   )
 }
 
 export default page;
 
-//3:45:45

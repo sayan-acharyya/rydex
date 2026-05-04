@@ -59,9 +59,18 @@ export async function POST(req: Request) {
         // ✅ Update onboarding step BEFORE return
         if (user.partnerOnBoardingSteps < 1) {
             user.partnerOnBoardingSteps = 1;
-            user.role = "partner";
-            await user.save();
+
         }
+        else if (user.partnerOnBoardingSteps < 2) {
+            user.partnerOnBoardingSteps = 2;
+        }
+        else {
+            user.partnerOnBoardingSteps = 3;
+        }
+
+        user.role = "partner";
+        user.partnerStatus = "pending";
+        await user.save();
 
         // ✅ Check existing vehicle for this user
         let vehicle = await Vehicle.findOne({ owner: user._id });
