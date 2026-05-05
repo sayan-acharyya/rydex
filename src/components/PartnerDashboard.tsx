@@ -4,10 +4,11 @@ import { RootState } from '@/redux/store';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from "motion/react"
-import { Check, CheckCircle, Clock, Lock } from 'lucide-react';
+import { Check, CheckCircle, Clock, Lock, Video } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import RejectionCard from './RejectionCard';
 import StatusCard from './StatusCard';
+import ActionCard from './ActionCard';
 
 
 type Step = {
@@ -130,6 +131,36 @@ const PartnerDashboard = () => {
                             icon={<Clock size={18} />}
                             title={"Documents Under Review"}
                             desc={"Your documents have been successfully submitted and are currently under review. We’ll notify you once the verification is complete"}
+                        />
+                    )
+                }
+
+                {
+                    activeStep == 5 && userData?.videoKycStatus === "approved" ? (
+                        <StatusCard
+                            icon={<Check size={18} />}
+                            title={"Video KYC approved"}
+                            desc={"You can now process to pricing."}
+                        />
+                    ) : activeStep == 5 && userData?.videoKycStatus === "rejected" ? (
+                        <RejectionCard
+                            title="Video KYC Rejected"
+                            reason={userData?.videoKycRejectionReason}
+                            actionLabel={`Request Again`}
+
+                        />
+                    ) : activeStep == 5 && userData?.videoKycStatus === "in_progress" && userData.videoKycRoomId ? (
+                        <ActionCard
+                            icon={<Video size={18} />}
+                            title={"Admin Started Video KYC"}
+                            button={"Join call"}
+                            onClick={() => router.push(`/video-kyc/${userData.videoKycRoomId}`)}
+                        />
+                    ) : (
+                        <StatusCard
+                            icon={<Clock size={20} />}
+                            title={"Waiting for Admin"}
+                            desc={"Admin will initiate Video KYC shortly."}
                         />
                     )
                 }
