@@ -135,21 +135,22 @@ const PartnerDashboard = () => {
                     )
                 }
 
-                {
-                    activeStep == 5 && userData?.videoKycStatus === "approved" ? (
+                {activeStep === 5 && (
+
+                   userData?.videoKycStatus === "approved" ? (
                         <StatusCard
                             icon={<Check size={18} />}
                             title={"Video KYC approved"}
                             desc={"You can now process to pricing."}
                         />
-                    ) : activeStep == 5 && userData?.videoKycStatus === "rejected" ? (
+                    ) :  userData?.videoKycStatus === "rejected" ? (
                         <RejectionCard
                             title="Video KYC Rejected"
                             reason={userData?.videoKycRejectionReason}
                             actionLabel={`Request Again`}
 
                         />
-                    ) : activeStep == 5 && userData?.videoKycStatus === "in_progress" && userData.videoKycRoomId ? (
+                    ) : userData?.videoKycStatus === "in_progress" && userData.videoKycRoomId ? (
                         <ActionCard
                             icon={<Video size={18} />}
                             title={"Admin Started Video KYC"}
@@ -163,6 +164,7 @@ const PartnerDashboard = () => {
                             desc={"Admin will initiate Video KYC shortly."}
                         />
                     )
+                )
                 }
             </div>
         </div>

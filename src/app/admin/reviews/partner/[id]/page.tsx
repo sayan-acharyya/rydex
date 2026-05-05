@@ -25,6 +25,7 @@ const page = () => {
   const [showApproved, setShowApproved] = useState(false);
   const [showReject, setShowReject] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [approveLoading, setApproveLoading] = useState(false); // ✅ added
 
 
   const handleGetPartner = async () => {
@@ -45,13 +46,18 @@ const page = () => {
 
   const handleApproved = async () => {
     try {
+      setApproveLoading(true); // ✅ start loading
+
       const { data } = await axios.get(`/api/admin/reviews/partner/${id}/approve`);
       toast.success("Partner approved successfully");
       setShowApproved(false);
       await handleGetPartner();
+      
     } catch (error) {
       console.log(error);
       toast.error("Failed to approve partner ");
+    } finally {
+      setApproveLoading(false); // ✅ stop loading
     }
   }
   
@@ -254,7 +260,20 @@ const page = () => {
                       className='flex-1 py-2 rounded-xl bg-gray-200 hover:bg-gray-300'>Cancle</button>
                     <button
                       onClick={handleApproved}
-                      className='flex-1 py-2 rounded-xl bg-gray-950 hover:bg-gray-900 text-white'>Yes, Approved</button>
+                      disabled={approveLoading}
+                      className='flex-1 py-2 rounded-xl bg-gray-950 hover:bg-gray-900 text-white 
+                      disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2'>
+                      {
+                        approveLoading ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Approving...
+                          </>
+                        ) : (
+                          "Yes, Approved"
+                        )
+                      }
+                    </button>
                   </div>
                 </motion.div>
               </motion.div>
@@ -311,4 +330,3 @@ const page = () => {
 }
 
 export default page;
-

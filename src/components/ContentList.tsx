@@ -12,7 +12,7 @@ const ContentList = ({ data, type }: any) => {
     const handleStartVideoKYC = async (id: any) => {
         try {
             const { data } = await axios.get(`/api/admin/video-kyc/start/${id}`);
-            router.refresh();
+           window.location.reload();
         } catch (error) {
             console.log(error);
         }
