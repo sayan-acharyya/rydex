@@ -59,16 +59,26 @@ const AdminDashboard = () => {
 
       // ✅ Safe fallback in case API returns undefined
       setPartnerReviews(data.pendingPartnersReviews || [])
-      setPendingKyc(data.pendingKyc || [])
-      setVehicleReviews(data.vehicleReviews || [])
 
     } catch (error) {
       console.log(error)
     }
   }
 
+  const handleGetPendingKYC = async () => {
+    try {
+      const { data } = await axios.get("/api/admin/video-kyc/pending")
+  
+      setPendingKyc(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
   useEffect(() => {
-    handleGetData()
+    handleGetData();
+    handleGetPendingKYC();
   }, [])
 
   const handleLogOut = async () => {

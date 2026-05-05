@@ -4,9 +4,19 @@ import React from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { ArrowRight, CheckCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import axios from 'axios'
 
 const ContentList = ({ data, type }: any) => {
     const router = useRouter();
+
+    const handleStartVideoKYC = async (id: any) => {
+        try {
+            const { data } = await axios.get(`/api/admin/video-kyc/start/${id}`);
+            router.refresh();
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     if (data.length == 0) {
         return (
@@ -63,17 +73,40 @@ const ContentList = ({ data, type }: any) => {
                             </div>
 
                             <div className='shrink-0'>
-                                <motion.button
-                                    onClick={() => {
-                                        type == "partner" ? router.push(`/admin/reviews/partner/${item._id}`)
-                                            : router.push(`/admin/reviews/vehicle/${item._id}`)
-                                    }}
-                                    whileTap={{ scale: 0.96 }}
-                                    className='flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950
+                                {item.videoKycStatus === "pending" ? (
+                                    <motion.button
+                                        onClick={() => handleStartVideoKYC(item._id)}
+                                        whileTap={{ scale: 0.96 }}
+                                        className='flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950
                                     hover:bg-neutral-800 text-white text-sm font-semibold transition-colors'
-                                >
-                                    Review <ArrowRight size={15} />
-                                </motion.button>
+                                    >
+                                        Start Video KYC <ArrowRight size={15} />
+                                    </motion.button>
+                                ) : (
+                                    item.videoKycStatus === "in_progress" ? (
+                                        <motion.button
+
+                                            whileTap={{ scale: 0.96 }}
+                                            className='flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950
+                                    hover:bg-neutral-800 text-white text-sm font-semibold transition-colors'
+                                        >
+                                            Join Call <ArrowRight size={15} />
+                                        </motion.button>
+                                    ) : (
+                                        <motion.button
+                                            onClick={() => {
+                                                type == "partner" ? router.push(`/admin/reviews/partner/${item._id}`)
+                                                    : router.push(`/admin/reviews/vehicle/${item._id}`)
+                                            }}
+                                            whileTap={{ scale: 0.96 }}
+                                            className='flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950
+                                    hover:bg-neutral-800 text-white text-sm font-semibold transition-colors'
+                                        >
+                                            Review <ArrowRight size={15} />
+                                        </motion.button>
+                                    )
+                                )}
+
                             </div>
 
                         </motion.div>
