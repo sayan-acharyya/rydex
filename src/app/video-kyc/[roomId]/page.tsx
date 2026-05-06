@@ -5,8 +5,11 @@ import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import Image from 'next/image';
-import { CheckCircle, Loader, Loader2, Mic, MicOff, PhoneOff, Video, VideoOff, XCircle } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { CheckCircle, CheckCircle2, Loader, Loader2, Mic, MicOff, PhoneOff, Video, VideoOff, X, XCircle } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { AnimatePresence, motion } from "motion/react"
 
 
 const page = () => {
@@ -18,9 +21,15 @@ const page = () => {
     const [isCameraOn, setIsCameraOn] = useState(true);
     const [isMicOn, setIsMicOn] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [aLoading, setALoading] = useState(false);
+    const [rLoading, setRLoading] = useState(false);
+    const [reason, setReason] = useState("");
+    const [showApprovalModel, setShowApprovalModel] = useState(false);
+    const [showRejectionModel, setShowRejectionModel] = useState(false);
 
     const { roomId } = useParams();
 
+    const router = useRouter();
 
     useEffect(() => {
         if (joined) return;
@@ -53,6 +62,44 @@ const page = () => {
         if (!stream) return;
         stream.getAudioTracks().forEach((track) => track.enabled = !isMicOn);
         setIsMicOn(!isMicOn);
+    }
+
+    const handleApproved = async () => {
+        setALoading(true);
+        try {
+            const { data } = await axios.post("/api/admin/video-kyc/complete", {
+                roomId, action: "approved"
+            });
+
+            toast.success("Video KYC approved successfully");
+            setALoading(false);
+            setShowApprovalModel(false);
+            router.push("/");
+            router.refresh();
+
+        } catch (error: any) {
+            console.log(error.response.data.message ?? error);
+            setALoading(false);
+        }
+    }
+
+
+    const handleRejected = async () => {
+        setRLoading(true);
+        try {
+            const { data } = await axios.post("/api/admin/video-kyc/complete", {
+                roomId, action: "rejected", reason
+            });
+
+            toast.error("Video KYC rejected. Reason recorded")
+            setRLoading(false);
+            setShowRejectionModel(false);
+            router.push("/");
+            router.refresh();
+        } catch (error: any) {
+            console.log(error.response.data.message ?? error);
+            setRLoading(false);
+        }
     }
 
     const startCall = async () => {
@@ -144,17 +191,19 @@ const page = () => {
                             <div className='flex flex-wrap gap-3'>
                                 {userData?.role === "admin" && (
                                     <>
-                                        <button className='bg-green-600 hover:bg-green-700 px-4 py-2 rounded-full text-sm flex items-center gap-2'>
+                                        <button
+                                            onClick={() => setShowApprovalModel(true)}
+                                            className='bg-green-600 hover:bg-green-700 px-4 py-2 rounded-full text-sm flex items-center gap-2'>
                                             <CheckCircle size={16} />Approve
                                         </button>
-                                        <button className='bg-red-600 hover:bg-red-700 px-4 py-2 rounded-full text-sm flex items-center gap-2' >
+                                        <button
+                                            onClick={() => setShowRejectionModel(true)}
+                                            className='bg-red-600 hover:bg-red-700 px-4 py-2 rounded-full text-sm flex items-center gap-2' >
                                             <XCircle size={16} />Reject
                                         </button>
                                     </>
                                 )}
-                                <button className='bg-red-700 hover:bg-red-800 px-4 py-2 rounded-full text-sm flex items-center gap-2'>
-                                    <PhoneOff size={16} />End Call
-                                </button>
+                            
                             </div>
                         )
                     }
@@ -246,6 +295,148 @@ const page = () => {
                 )}
             </div>
 
+            <AnimatePresence>
+                {showApprovalModel && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative bg-[#111] w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/10"
+                        >
+                            {/* Close */}
+                            <button
+                                onClick={() => setShowApprovalModel(false)}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+                            >
+                                <X size={18} />
+                            </button>
+
+                            {/* Icon */}
+                            <div className="flex items-center justify-center mb-4">
+                                <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/20">
+                                    <CheckCircle2 className="text-green-400" size={24} />
+                                </div>
+                            </div>
+
+                            {/* Title */}
+                            <h2 className="text-xl font-semibold text-center mb-2">
+                                Approve Verification?
+                            </h2>
+
+                            {/* Description */}
+                            <p className="text-sm text-gray-400 text-center mb-6">
+                                This will mark the user’s Video KYC as approved. This action cannot be undone.
+                            </p>
+
+                            {/* Actions */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowApprovalModel(false)}
+                                    className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300
+            hover:bg-white/10 transition"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    disabled={aLoading}
+                                    onClick={handleApproved}
+                                    className="flex-1 py-2.5 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 font-medium
+            hover:bg-green-500/20 hover:border-green-400/40
+            hover:shadow-[0_0_12px_rgba(34,197,94,0.3)]
+            transition-all duration-300"
+                                >
+                                    {aLoading ? "Processing...." : "Approve"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {showRejectionModel && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative bg-[#111] w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/10"
+                        >
+                            {/* Close */}
+                            <button
+                                onClick={() => setShowRejectionModel(false)}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+                            >
+                                <X size={18} />
+                            </button>
+
+                            {/* Icon */}
+                            <div className="flex items-center justify-center mb-4">
+                                <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                                    <XCircle className="text-red-400" size={24} />
+                                </div>
+                            </div>
+
+                            {/* Title */}
+                            <h2 className="text-xl font-semibold text-center mb-2">
+                                Reject Verification?
+                            </h2>
+
+                            {/* Description */}
+                            <p className="text-sm text-gray-400 text-center mb-4">
+                                Please provide a reason for rejection. This will be recorded.
+                            </p>
+
+                            {/* Reason Input */}
+                            <textarea
+                                value={reason}
+                                onChange={(e) => setReason(e.target.value)}
+                                placeholder="Enter rejection reason..."
+                                className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white 
+          placeholder-gray-500 focus:outline-none focus:border-red-400/40 mb-5 resize-none"
+                                rows={3}
+                            />
+
+                            {/* Actions */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowRejectionModel(false)}
+                                    className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300
+            hover:bg-white/10 transition"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    disabled={rLoading || !reason.trim()}
+                                    onClick={handleRejected}
+                                    className={`flex-1 py-2.5 rounded-xl font-medium transition-all duration-300
+              ${rLoading || !reason.trim()
+                                            ? "bg-red-500/5 text-gray-500 border border-white/10 cursor-not-allowed"
+                                            : "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-400/40 hover:shadow-[0_0_12px_rgba(239,68,68,0.3)]"
+                                        }`}
+                                >
+                                    {rLoading ? "Rejecting..." : "Reject"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

@@ -52,7 +52,7 @@ const page = () => {
       toast.success("Partner approved successfully");
       setShowApproved(false);
       await handleGetPartner();
-      
+
     } catch (error) {
       console.log(error);
       toast.error("Failed to approve partner ");
@@ -60,15 +60,15 @@ const page = () => {
       setApproveLoading(false); // ✅ stop loading
     }
   }
-  
+
   const handleRejected = async () => {
     try {
       const { data } = await axios.post(`/api/admin/reviews/partner/${id}/reject`, { rejectionReason });
       toast.success("Partner rejected successfully");
       setShowReject(false);
       await handleGetPartner();
-       
-      
+
+
     } catch (error) {
       console.log(error);
       toast.error("Failed to rejected partner ");

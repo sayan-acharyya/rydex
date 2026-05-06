@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import RejectionCard from './RejectionCard';
 import StatusCard from './StatusCard';
 import ActionCard from './ActionCard';
+import axios from 'axios';
 
 
 type Step = {
@@ -35,6 +36,7 @@ const PartnerDashboard = () => {
     const { userData } = useSelector((state: RootState) => state.user);
 
     const [activeStep, setActiveStep] = useState(0);
+    const [requestLoading, setRequestLoading] = useState(false);
 
 
     useEffect(() => {
@@ -137,18 +139,23 @@ const PartnerDashboard = () => {
 
                 {activeStep === 5 && (
 
-                   userData?.videoKycStatus === "approved" ? (
+                    userData?.videoKycStatus === "approved" ? (
                         <StatusCard
                             icon={<Check size={18} />}
                             title={"Video KYC approved"}
                             desc={"You can now process to pricing."}
                         />
-                    ) :  userData?.videoKycStatus === "rejected" ? (
+                    ) : userData?.videoKycStatus === "rejected" ? (
                         <RejectionCard
                             title="Video KYC Rejected"
                             reason={userData?.videoKycRejectionReason}
-                            actionLabel={`Request Again`}
-
+                            actionLabel={requestLoading ? "Requesting...." : `Request Again`}
+                            onAction={async () => {
+                                setRequestLoading(true);
+                                await axios.get("/api/partner/video-kyc/request");
+                                setRequestLoading(false);
+                                window.location.reload();
+                            }}
                         />
                     ) : userData?.videoKycStatus === "in_progress" && userData.videoKycRoomId ? (
                         <ActionCard
