@@ -46,7 +46,11 @@ export async function GET(req: NextRequest) {
             name: p.name,
             email: p.email,
             vehicleType: vehicleTypeMap.get(String(p._id))
-        }))
+        }));
+
+        const pendingVehicles = await Vehicle.find({
+            status: "pending"
+        }).populate("owner")
 
         return NextResponse.json({
             stats: {
@@ -56,7 +60,8 @@ export async function GET(req: NextRequest) {
                 totalRejectedPartners,
             },
             pendingPartnerUsers,
-            pendingPartnersReviews
+            pendingPartnersReviews,
+            pendingVehicles
 
         }, {
             status: 200

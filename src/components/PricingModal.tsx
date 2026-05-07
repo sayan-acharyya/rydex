@@ -168,4 +168,4 @@ const PricingModal = ({ open, onClose, data }: PropsType) => {
 export default PricingModal;
 
 
-//7:54:7
+ 

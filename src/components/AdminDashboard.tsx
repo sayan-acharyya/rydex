@@ -59,6 +59,7 @@ const AdminDashboard = () => {
 
       // ✅ Safe fallback in case API returns undefined
       setPartnerReviews(data.pendingPartnersReviews || [])
+      setVehicleReviews(data.pendingVehicles || []);
 
     } catch (error) {
       console.log(error)

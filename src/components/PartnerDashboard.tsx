@@ -74,9 +74,9 @@ const PartnerDashboard = () => {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         handleGetPricing();
-    },[])
+    }, [])
 
     return (
         <div className='min-h-screen bg-gradient-to-r from-gray-100 to-gray-200
@@ -197,6 +197,28 @@ const PartnerDashboard = () => {
                         />
                     )
                 )
+                }
+
+                {
+                    activeStep === 7 && vehicleData?.status === "pending" && (
+                        <StatusCard
+                            icon={<Clock size={20} />}
+                            title="Pricing Under Review"
+                            desc="Your pricing details are currently being evaluated by our team."
+                        />
+                    )
+                }
+
+
+                {
+                    activeStep === 7 && vehicleData?.status === "rejected" && (
+                        <RejectionCard
+                            title="Pricing Rejected"
+                            reason={vehicleData.rejectionReason}
+                            actionLabel="Edit & Resubmit"
+                            onAction={() => setShowPricing(true)}
+                        />
+                    )
                 }
             </div>
 
