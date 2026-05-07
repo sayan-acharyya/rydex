@@ -64,6 +64,20 @@ const PartnerDashboard = () => {
         }
     }
 
+    const handleGetPricing = async () => {
+        try {
+            const { data } = await axios.get("/api/partner/onboarding/pricing");
+            console.log(data);
+            setVehicleData(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(()=>{
+        handleGetPricing();
+    },[])
+
     return (
         <div className='min-h-screen bg-gradient-to-r from-gray-100 to-gray-200
          px-4 pt-28 pb-20'>
