@@ -1,6 +1,6 @@
 'use client'
 import { IVehicle } from '@/models/vehicle.model'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from "motion/react"
 import { ImagePlus, IndianRupee, X } from 'lucide-react'
 import axios from 'axios'
@@ -15,12 +15,20 @@ type PropsType = {
 
 const PricingModal = ({ open, onClose, data }: PropsType) => {
     const [image, setImage] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(data?.imageUrl ||null);
-    const [baseFare, setBaseFare] = useState(data?.baseFare ||"");
-    const [pricePerKM, setPricePerKM] = useState(data?.pricePerKM ||"");
-    const [waitingCharge, setWaitingCharge] = useState(data?.waitingCharge ||"");
+    const [preview, setPreview] = useState<string | null>(null);
+    const [baseFare, setBaseFare] = useState("");
+    const [pricePerKM, setPricePerKM] = useState("");
+    const [waitingCharge, setWaitingCharge] = useState("");
     const [loading, setLoading] = useState(false);
-  
+
+    useEffect(() => {
+        if (data) {
+            setPreview(data?.imageUrl || null);
+            setBaseFare(data.baseFare?.toString() || "");
+            setPricePerKM(data.pricePerKM?.toString() || "");
+            setWaitingCharge(data.waitingCharge?.toString() || "");
+        }
+    }, [data]);
 
     const handleSubmit = async () => {
         try {
@@ -35,7 +43,7 @@ const PricingModal = ({ open, onClose, data }: PropsType) => {
 
             const { data } = await axios.post("/api/partner/onboarding/pricing", formData);
             toast.success("saved successfully");
-             
+
             setLoading(false);
             onClose(false);
         } catch (error: any) {
@@ -158,3 +166,6 @@ const PricingModal = ({ open, onClose, data }: PropsType) => {
 }
 
 export default PricingModal;
+
+
+//7:54:7
