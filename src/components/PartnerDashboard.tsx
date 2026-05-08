@@ -4,7 +4,7 @@ import { RootState } from '@/redux/store';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from "motion/react"
-import { ArrowRight, Check, CheckCircle, Clock, Lock, Video } from 'lucide-react';
+import { ArrowRight, Check, CheckCircle, Clock, IndianRupee, Lock, Video } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import RejectionCard from './RejectionCard';
 import StatusCard from './StatusCard';
@@ -223,6 +223,16 @@ const PartnerDashboard = () => {
                 }
 
                 {
+                    activeStep === 6 && (
+                        <StatusCard
+                            icon={<IndianRupee size={18} />}
+                            title={"Set Your Vehicle Pricing"}
+                            desc={"You're almost ready—set your pricing to start earning"}
+                        />
+                    )
+                }
+
+                {
                     activeStep === 7 && vehicleData?.status === "pending" && (
                         <StatusCard
                             icon={<Clock size={20} />}
@@ -426,8 +436,8 @@ const PartnerDashboard = () => {
 
                                             <div className='bg-gray-50 p-4 rounded-xl text-sm space-y-1'>
                                                 <p className='text-gray-900'><span className='text-gray-500'>Name: </span> {userData?.name || "-"}</p>
-                                                <p  className='text-gray-900'><span className='text-gray-500'>Email: </span> {userData?.email || "-"}</p>
-                                                <p  className='text-gray-900'><span className='text-gray-500'>Phone: </span> {userData?.mobileNumber || "-"}</p>
+                                                <p className='text-gray-900'><span className='text-gray-500'>Email: </span> {userData?.email || "-"}</p>
+                                                <p className='text-gray-900'><span className='text-gray-500'>Phone: </span> {userData?.mobileNumber || "-"}</p>
                                             </div>
                                         </div>
 
