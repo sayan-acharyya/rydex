@@ -26,6 +26,7 @@ const page = () => {
   const [showReject, setShowReject] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [approveLoading, setApproveLoading] = useState(false); // ✅ added
+  const [rejectLoading, setRejectLoading] = useState(false);
 
 
   const handleGetPartner = async () => {
@@ -62,15 +63,18 @@ const page = () => {
   }
 
   const handleRejected = async () => {
+    setRejectLoading(true);
     try {
       const { data } = await axios.post(`/api/admin/reviews/partner/${id}/reject`, { rejectionReason });
-      toast.success("Partner rejected successfully");
+      toast.error("Partner rejected successfully");
       setShowReject(false);
+      setRejectLoading(false);
       await handleGetPartner();
 
 
     } catch (error) {
       console.log(error);
+      setRejectLoading(false);
       toast.error("Failed to rejected partner ");
     }
   }
@@ -315,8 +319,9 @@ const page = () => {
                       className='flex-1 py-2 rounded-xl bg-gray-200 hover:bg-gray-300'>Cancle</button>
                     <button
                       onClick={handleRejected}
+                      disabled={rejectLoading}
                       className='flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white'>
-                      Reject
+                      {rejectLoading ? "Rejecting..." : "Reject"}
                     </button>
                   </div>
                 </motion.div>
