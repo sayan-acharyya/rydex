@@ -83,7 +83,7 @@ const HeroSection = ({ onAuthRequired }: { onAuthRequired: () => void }) => {
                         </motion.button>
                     ) : (
                         <motion.button
-                            onClick={() => router.push('/book')}
+                            onClick={() => router.push('/user/book')}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className='mt-10 px-10 py-4 bg-white text-black
