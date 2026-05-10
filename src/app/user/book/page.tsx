@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from "motion/react"
-import { ArrowLeft, Bike, Car, CheckCircle, CheckCircle2, ChevronRight, Loader, Loader2, LocateFixed, MapPin, Phone, Truck } from 'lucide-react'
+import { ArrowLeft, Bike, Car, CheckCircle, CheckCircle2, ChevronRight, Loader, Loader2, LocateFixed, MapPin, Navigation, Phone, Truck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { vehicleType } from '@/models/vehicle.model'
 import axios from 'axios'
@@ -76,9 +76,10 @@ const page = () => {
 
   const progress = [!!vehicle, !!(mobile.length == 10), !!pickUp, !!drop].filter(Boolean).length
 
+  const canContinue = !!(vehicle && mobile && pickUp &&
+    drop && pickUpLat && pickUpLon && dropLat && dropLon);
 
-
-  const searchAddress = async (q: string, setResults: (r: place[]) => void) => {
+  const searchAddress = async (q: string, setResults: (r: place[]) => void, restrict?: string | null) => {
     try {
       if (!q || q.trim().length < 3) {
         setResults([]);
@@ -86,7 +87,7 @@ const page = () => {
       }
       const { data } = await axios.get(`https://photon.komoot.io/api/?q=${encodeURIComponent(q.trim())}&limit=8&lang=en`)
 
-      const results: place[] = (data.features ?? []).map((f: any) => ({
+      let results: place[] = (data.features ?? []).map((f: any) => ({
         id: String(f.properties.osm_id),
         name: f.properties.name,
         city: f.properties.city,
@@ -96,6 +97,10 @@ const page = () => {
         lat: f.geometry.coordinates[1],
         lng: f.geometry.coordinates[0]
       }));
+
+      if (restrict) {
+        results = results.filter(r => r.country == restrict)
+      }
 
       setResults(results)
     } catch (error) {
@@ -190,7 +195,7 @@ const page = () => {
 
         {/* choose vehicle */}
         <div className='bg-white rounded-3xl border border-zinc-200 shadow-[0_8px_40px_rgba(0,0,0,0.08)] overflow-x-visible'>
-          <div className='h-1 bg-zinc-900 w-full' />
+          <div className='h-1 bg-zinc-900  w-[90%] rounded-2xl   mx-auto' />
           <div className='p-6 space-y-7'>
             <motion.div
               variants={stepVariants}
@@ -378,7 +383,7 @@ const page = () => {
                             >
                               <MapPin size={13} className='text-zinc-400 shrink-0' />
                               <span className='text-sm text-zinc-800 font-medium truncate'>{suggestion(p)}</span>
-                              <ChevronRight size={13} className='text-zinc-300 shrink-0 ml-auto' />
+                              <ChevronRight size={13} className='text-zinc-400 shrink-0 ml-auto' />
                             </motion.div>
                           ))
                         }
@@ -400,12 +405,14 @@ const page = () => {
                       value={drop}
                       onChange={(e) => {
                         setDrop(e.target.value)
-                        searchAddress(e.target.value, setDropSuggestion)
+                        searchAddress(e.target.value, setDropSuggestion, pickUpCountry)
                       }}
-                      placeholder='Drop location'
+                      disabled={!pickUpCountry}
+                      placeholder={pickUpCountry ? 'Drop location' : "Select Pick up location first"}
                       className='flex-1 bg-transparent text-sm font-semibold text-zinc-900
                     placeholder:text-zinc-400 outline-none'
                     />
+                    <MapPin size={14} className='text-zinc-400 shrink-0' />
                   </div>
                   <AnimatePresence>
                     {dropSuggestion?.length > 0 && (
@@ -436,7 +443,7 @@ const page = () => {
                             >
                               <MapPin size={13} className='text-zinc-400 shrink-0' />
                               <span className='text-sm text-zinc-800 font-medium truncate'>{suggestion(p)}</span>
-                              <ChevronRight size={13} className='text-zinc-300 shrink-0 ml-auto' />
+                              <ChevronRight size={13} className='text-zinc-400 shrink-0 ml-auto' />
                             </motion.div>
                           ))
                         }
@@ -448,6 +455,24 @@ const page = () => {
 
             </motion.div>
 
+            <motion.div
+              variants={stepVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.3 }}
+            >
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                whileHover={canContinue ? { scale: 1.02 } : {}}
+                disabled={!canContinue}
+                className='w-full h-14 rounded-2xl bg-zinc-900 hover:bg-black 
+                disabled:opacity-35 text-white font-black text-sm tracking-wide flex items-center justify-center gap-2.5
+                transition-colors shadow-lg disabled:shadow-none
+                '
+              >
+                <span>Continue</span>
+              </motion.button>
+            </motion.div>
           </div>
         </div>
       </motion.div>
@@ -456,4 +481,4 @@ const page = () => {
 }
 
 export default page;
-
+//2:03:10
