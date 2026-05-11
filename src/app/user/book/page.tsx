@@ -462,6 +462,11 @@ const page = () => {
               transition={{ delay: 0.3 }}
             >
               <motion.button
+                onClick={() => {
+                  router.push(`/user/search?pickup=${encodeURIComponent(pickUp)}
+                  &drop=${encodeURIComponent(drop)}&vehicle=${vehicle}&mobile=${encodeURIComponent(mobile)}
+                  &pickuplat=${pickUpLat}&pickuplon=${pickUpLon}&droplat=${dropLat}&droplon=${dropLon}`)
+                }}
                 whileTap={{ scale: 0.97 }}
                 whileHover={canContinue ? { scale: 1.02 } : {}}
                 disabled={!canContinue}
@@ -481,4 +486,4 @@ const page = () => {
 }
 
 export default page;
-//2:03:10
+
