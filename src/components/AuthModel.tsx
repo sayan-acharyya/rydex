@@ -183,7 +183,7 @@ const AuthModel = ({ open, onClose }: PropType) => {
                 {/* Header */}
                 <div className='mb-6 text-center'>
                     <div className='flex justify-center'>
-                        <Image
+                        <Image  
                             width={90}
                             height={80}
                             priority
