@@ -181,21 +181,35 @@ const SearchMap = ({ pickUp, drop, onChange, onDistance }: props) => {
         }
     }
 
+    const reverseGeoCoding = async (lat: number, lon: number) => {
+        const { data } = await axios.get(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+        );
+
+        return data?.display_name || null;
+    }
+
+
+
+
     const dragPickUp = async (lat: number, lon: number) => {
+        const addr = await reverseGeoCoding(lat, lon)
         setP1([lat, lon])
         if (p2) {
             loadRoute([lat, lon], p2)
         }
-
+        onChange?.(addr!, drop)
     }
 
     const dragDrop = async (lat: number, lon: number) => {
+        const addr = await reverseGeoCoding(lat, lon)
         setP2([lat, lon])
         if (p1) {
             loadRoute(p1, [lat, lon]);
         }
-
+        onChange?.(pickUp, addr!)
     }
+
 
     useEffect(() => {
         setReady(false)
@@ -308,7 +322,7 @@ const SearchMap = ({ pickUp, drop, onChange, onDistance }: props) => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className='absolute bottom-6 left-4 z-500 flex items-center gap-2 bg-white 
+                        className='absolute bottom-20 left-4 z-500 flex items-center gap-2 bg-white 
                         border  border-zinc-200 px-3.5 py-2 rounded-xl shadow-lg'
                     >
                         <Navigation2 size={13} className='text-zinc-900' />
