@@ -25,7 +25,7 @@ const page = () => {
         <div className='min-h-screen bg-zinc-100 text-zinc-900 overflow-x-hidden'>
             <div className='absolute top-5 left-5 z-50'>
                 <motion.button
-                    onClick={() => router.back()}
+                    onClick={() => router.push("/")}
                     whileTap={{ scale: 0.88 }}
                     className='w-11 h-11 rounded-full bg-white border border-zinc-200 shadow-sm flex
                             items-center justify-center hover:bg-zinc-50 transition-colors shrink-0'
