@@ -23,6 +23,12 @@ export interface IUser extends Document {
   videoKycStatus: VideoKycStatus;
   videoKycRoomId: string;
   videoKycRejectionReason: string;
+  socketId: string | null;
+  location?: {
+    type: "Point",
+    coordinates: [number, number]
+  };
+  isOnline: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -88,13 +94,31 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     videoKycRejectionReason: {
       type: String
+    },
+    socketId: {
+      type: String,
+      default: null
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"]
+      },
+      coordinates: [Number]
+
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
+      index: true
     }
 
   },
   { timestamps: true }
 );
 
-// Prevent model overwrite in Next.js (important for hot reload)
+userSchema.index({ location: "2dsphere" })
+
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", userSchema);
 

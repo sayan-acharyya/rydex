@@ -185,9 +185,9 @@ const AuthModel = ({ open, onClose }: PropType) => {
                     <div className='flex justify-center'>
                         <Image
                             width={90}
-                            height={70}
+                            height={80}
                             priority
-                            src={"/logo2.png"}
+                            src={"/Logo3.png"}
                             alt='logo'
                             className="mx-auto"
                         />
