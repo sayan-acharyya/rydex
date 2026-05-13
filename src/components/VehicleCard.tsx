@@ -172,3 +172,5 @@ const VehicleCard = ({ vehicle, distance }: { vehicle: IVehicle, distance: numbe
 }
 
 export default VehicleCard;
+
+//06:13:40
