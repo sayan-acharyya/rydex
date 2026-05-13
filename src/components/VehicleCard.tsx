@@ -2,7 +2,7 @@
 import { IVehicle } from '@/models/vehicle.model'
 import React from 'react'
 import { motion } from "motion/react"
-import { Bike, Car, Clock, Gauge, IndianRupee, IndianRupeeIcon, Star, Truck } from 'lucide-react';
+import { ArrowRight, Bike, Car, Clock, Gauge, IndianRupee, IndianRupeeIcon, Star, Truck } from 'lucide-react';
 
 const TYPE_CONFIG: any = {
     bike: {
@@ -29,6 +29,13 @@ const TYPE_CONFIG: any = {
 
 const VehicleCard = ({ vehicle, distance }: { vehicle: IVehicle, distance: number | undefined }) => {
     const { icon: Icon, label } = TYPE_CONFIG[vehicle.type];
+
+    let estimated: number = 0;
+
+    if (vehicle.pricePerKM && vehicle.baseFare && distance) {
+        estimated = Math.round(vehicle.baseFare + vehicle.pricePerKM * distance)
+
+    }
 
     return (
         <motion.div
@@ -116,10 +123,52 @@ const VehicleCard = ({ vehicle, distance }: { vehicle: IVehicle, distance: numbe
 
                 </div>
 
+                <div className='flex items-end justify-between pt-3 border-t border-zinc-100'>
+                    <div>
+                        <p className="text-zinc-400 text-[9px] uppercase tracking-widest font-bold mb-0.5">
+                            Est. Fare
+                        </p>
+                        <motion.div
+                            key={estimated}
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className='flex items-baseline gap-0.5'
+                        >
+                            <IndianRupee
+                                size={16}
+                                className='text-zinc-900 mb-0.5 '
+                                strokeWidth={2.5}
+                            />
+                            <span className='text-zinc-900 text-3xl font-black tracking-tight leading-none'>
+                                {estimated}
+                            </span>
+                        </motion.div>
+                    </div>
+
+                    <motion.button
+                        whileTap={{ scale: 0.92 }}
+                        whileHover={{ scale: 1.04 }}
+                        className='flex items-center gap-2 bg-zinc-900 hover:bg-black text-white text-sm 
+                    font-black px-6 py-3.5 rounded-2xl transition-colors shadow-md'
+                    >
+                        Book
+                        <motion.div
+                            initial={{ x: 0 }}
+                            whileHover={{ x: 3 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <ArrowRight size={14}/>
+                        </motion.div>
+                    </motion.button>
+
+                </div>
+
+
             </div>
 
         </motion.div>
     )
 }
 
-export default VehicleCard
+export default VehicleCard;
