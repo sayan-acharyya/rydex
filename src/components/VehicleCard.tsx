@@ -1,5 +1,5 @@
 'use client'
-import { IVehicle } from '@/models/vehicle.model'
+import { vehicleType } from '@/models/vehicle.model'
 import React from 'react'
 import { motion } from "motion/react"
 import { ArrowRight, Bike, Car, Clock, Gauge, IndianRupee, IndianRupeeIcon, Star, Truck } from 'lucide-react';
@@ -27,7 +27,24 @@ const TYPE_CONFIG: any = {
     }
 };
 
-const VehicleCard = ({ vehicle, distance }: { vehicle: IVehicle, distance: number | undefined }) => {
+interface IVehicle {
+    owner: string,
+    type: vehicleType,
+    vehicleModel: string,
+    number: string,
+    imageUrl?: string,
+    baseFare?: number,
+    pricePerKM?: number,
+    waitingCharge?: number,
+    status: "approved" | "pending" | "rejected",
+    rejectionReason?: string,
+    isActive: boolean,
+    createdAt: Date,
+    updatedAt: Date,
+}
+
+
+const VehicleCard = ({ vehicle, distance, onBook }: { vehicle: IVehicle, distance: number | undefined, onBook: () => void }) => {
     const { icon: Icon, label } = TYPE_CONFIG[vehicle.type];
 
     let estimated: number = 0;
@@ -147,6 +164,7 @@ const VehicleCard = ({ vehicle, distance }: { vehicle: IVehicle, distance: numbe
                     </div>
 
                     <motion.button
+                        onClick={onBook}
                         whileTap={{ scale: 0.92 }}
                         whileHover={{ scale: 1.04 }}
                         className='flex items-center gap-2 bg-zinc-900 hover:bg-black text-white text-sm 
@@ -158,7 +176,7 @@ const VehicleCard = ({ vehicle, distance }: { vehicle: IVehicle, distance: numbe
                             whileHover={{ x: 3 }}
                             transition={{ duration: 0.2 }}
                         >
-                            <ArrowRight size={14}/>
+                            <ArrowRight size={14} />
                         </motion.div>
                     </motion.button>
 
@@ -173,4 +191,3 @@ const VehicleCard = ({ vehicle, distance }: { vehicle: IVehicle, distance: numbe
 
 export default VehicleCard;
 
-//06:13:40

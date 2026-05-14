@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from "motion/react"
 import { ArrowLeft, Bike, Car, MapPin, Navigation, RefreshCcw, Search, Truck, Zap } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { IVehicle, vehicleType } from '@/models/vehicle.model'
+import { vehicleType } from '@/models/vehicle.model'
 import SearchMap from '@/components/SearchMap'
 import axios from 'axios'
 import VehicleCard from '@/components/VehicleCard'
@@ -31,13 +31,29 @@ const VEHICLE_META: any = {
     }
 };
 
+interface IVehicle {
+    owner: string,
+    type: vehicleType,
+    vehicleModel: string,
+    number: string,
+    imageUrl?: string,
+    baseFare?: number,
+    pricePerKM?: number,
+    waitingCharge?: number,
+    status: "approved" | "pending" | "rejected",
+    rejectionReason?: string,
+    isActive: boolean,
+    createdAt: Date,
+    updatedAt: Date,
+}
+
 const page = () => {
     const router = useRouter();
     const params = useSearchParams();
 
     const [pickUp, setPickUp] = useState(params.get("pickup") || "");
     const [drop, setDrop] = useState(params.get("drop") || "");
-    const [km, setKm] = useState<number>();
+    const [km, setKm] = useState<number>(0);
 
     const mobile = params.get("mobile");
     const pickUpLat = Number(params.get("pickuplat"))
@@ -235,6 +251,23 @@ const page = () => {
                                 <VehicleCard
                                     vehicle={v}
                                     distance={km}
+                                    onBook={
+                                        () => {
+                                            const url = new URLSearchParams({
+                                                pickUp,
+                                                drop,
+                                                vehicle: v.type,
+                                                driverId: v.owner,
+                                                fare: String(v.baseFare! + (v.pricePerKM! * km)),
+                                                pickUpLat: String(pickUpLat),
+                                                pickUpLon: String(pickUpLon),
+                                                dropLat: String(dropLat),
+                                                dropLon: String(dropLon),
+                                                mobile: String(mobile)
+                                            })
+                                            router.push(`/user/checkout?${url.toString()}`)
+                                        }
+                                    }
                                 />
                             </motion.div>
                         ))}
