@@ -125,13 +125,13 @@ const bookingSchema = new mongoose.Schema<IBooking>(
         userMobileNumber: {
             type: String,
             required: true,
-            match: /^[6-9]\d{9}$/, // Indian mobile validation
+            
         },
 
         driverMobileNumber: {
             type: String,
             required: true,
-            match: /^[6-9]\d{9}$/,
+             
         },
 
         bookingStatus: {

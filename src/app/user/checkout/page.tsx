@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { AnimatePresence, motion } from "motion/react"
 import { ArrowRight, Bike, Car, Clock, CreditCard, IndianRupee, MapPin, Navigation, ShieldCheck, Truck } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import axios from 'axios';
 
 const VEHICLE_META: any = {
     bike: {
@@ -52,11 +53,42 @@ const page = () => {
     const dropLat = Number(params.get("droplat"))
     const dropLon = Number(params.get("droplon"))
     const vehicle = params.get("vehicle") || ""
+    const driverId = params.get("driverId") || "";
+    const vehicleId = params.get("vehicleId") || "";
+
+
+
     const fare = Math.round(Number(params.get("fare") || 0));
 
     const { icon: Icon, label } = VEHICLE_META[vehicle];
 
     const [status, setStatus] = useState<Status>("idle");
+
+    const handleRequestBooking = async () => {
+        try {
+            const { data } = await axios.post("/api/booking/create", {
+                driverId,
+                vehicleId,
+                pickUpAddress: pickUp,
+                dropAddress: drop,
+                pickUpLocation: {
+                    type: "Point",
+                    coordinates: [pickUpLon, pickUpLat]
+                },
+                dropLocation: {
+                    type: "Point",
+                    coordinates: [dropLon, dropLat]
+                },
+                fare,
+                mobileNumber: mobile
+            });
+            console.log(data);
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
 
     return (
         <div className='min-h-screen bg-zinc-100 px-4 py-12'>
@@ -225,14 +257,15 @@ const page = () => {
                                             </div>
 
                                             <motion.button
+                                                onClick={handleRequestBooking}
                                                 whileTap={{ scale: 0.97 }}
                                                 whileHover={{ scale: 1.02 }}
                                                 className='w-full h-14 mt-8 bg-zinc-900 hover:bg-black disabled:opacity-40
                                                 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-colors shadow-md'
                                             >
-                                                <span className='flex gap-2 items-center'> Request Ride <ArrowRight size={18}/></span>
+                                                <span className='flex gap-2 items-center'> Request Ride <ArrowRight size={18} /></span>
                                             </motion.button>
-                                            
+
                                         </motion.div>
                                     )
                                 }
