@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 // -------------------- TYPES --------------------
 
-type BookingStatus =
+type BookingStatus = "idle"
     | "requested"
     | "awaiting_payment"
     | "confirmed"
@@ -145,8 +145,9 @@ const bookingSchema = new mongoose.Schema<IBooking>(
                 "cancelled",
                 "rejected",
                 "expired",
+                "idle"
             ],
-            default: "requested",
+            default: "idle",
         },
 
         paymentStatus: {
