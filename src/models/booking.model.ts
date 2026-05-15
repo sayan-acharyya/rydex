@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 // -------------------- TYPES --------------------
 
-type BookingStatus = "idle"
+export type BookingStatus = "idle"
     | "requested"
     | "awaiting_payment"
     | "confirmed"
@@ -12,7 +12,7 @@ type BookingStatus = "idle"
     | "rejected"
     | "expired";
 
-type PaymentStatus = "pending" | "paid" | "cash" | "failed";
+export type PaymentStatus = "pending" | "paid" | "cash" | "failed";
 
 export interface IBooking {
     user: mongoose.Types.ObjectId;
@@ -39,6 +39,7 @@ export interface IBooking {
 
     bookingStatus: BookingStatus;
     paymentStatus: PaymentStatus;
+    paymentDeadline: Date;
 
     adminCommission: number;
     partnerAmount: number;
@@ -125,13 +126,13 @@ const bookingSchema = new mongoose.Schema<IBooking>(
         userMobileNumber: {
             type: String,
             required: true,
-            
+
         },
 
         driverMobileNumber: {
             type: String,
             required: true,
-             
+
         },
 
         bookingStatus: {
@@ -154,6 +155,10 @@ const bookingSchema = new mongoose.Schema<IBooking>(
             type: String,
             enum: ["pending", "paid", "cash", "failed"],
             default: "pending",
+        },
+
+        paymentDeadline: {
+            type: Date
         },
 
         adminCommission: {
