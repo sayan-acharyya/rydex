@@ -4,7 +4,6 @@ import Booking from "@/models/booking.model";
 import User from "@/models/user.model";
 import { NextRequest } from "next/server";
 
-
 export async function POST(req: NextRequest) {
     try {
         await connectDb();
@@ -13,8 +12,8 @@ export async function POST(req: NextRequest) {
         if (!session || !session.user) {
             return Response.json(
                 { message: "user is not authenticated" },
-                { status: 400 }
-            )
+                { status: 401 } // ✅ fixed
+            );
         }
 
         const {
@@ -28,11 +27,16 @@ export async function POST(req: NextRequest) {
             mobileNumber
         } = await req.json();
 
-        if (!driverId || !vehicleId || !pickUpLocation.coordinates || !dropLocation.coordinates) {
+        if (
+            !driverId ||
+            !vehicleId ||
+            !pickUpLocation?.coordinates ||
+            !dropLocation?.coordinates
+        ) {
             return Response.json(
                 { message: "missing required details" },
                 { status: 400 }
-            )
+            );
         }
 
         const driver = await User.findById(driverId);
@@ -40,7 +44,7 @@ export async function POST(req: NextRequest) {
             return Response.json(
                 { message: "driver not found" },
                 { status: 400 }
-            )
+            );
         }
 
         const existing = await Booking.findOne({
@@ -48,36 +52,45 @@ export async function POST(req: NextRequest) {
             bookingStatus: {
                 $in: ["requested", "awaiting_payment", "confirmed", "started"]
             }
-        })
-
+        });
 
         if (existing) {
-            return Response.json(
-                existing
-            )
+            // ✅ also populate existing booking
+            const populatedExisting = await Booking.findById(existing._id)
+                .populate("driver")
+                .populate("vehicle");
+
+            return Response.json(populatedExisting, { status: 200 });
         }
 
+        // ✅ create booking (store only IDs)
         const booking = await Booking.create({
             user: session.user.id,
-            driver,
+            driver: driver._id,
             vehicle: vehicleId,
-            pickUpAddress,
-            dropAddress,
+            pickUpAddress: pickUpAddress.trim(),
+            dropAddress: dropAddress.trim(),
             pickUpLocation,
             dropLocation,
             fare,
-            userMobileNumber: mobileNumber,
-            driverMobileNumber: driver.mobileNumber,
+            userMobileNumber: mobileNumber?.trim(),
+            driverMobileNumber: driver.mobileNumber?.trim(),
             bookingStatus: "requested"
-        })
+        });
 
-        return Response.json(booking, { status: 200 })
+        // 🔥 IMPORTANT: fetch again with populate
+        const populatedBooking = await Booking.findById(booking._id)
+            .populate("driver")
+            .populate("user")
+            .populate("vehicle");
 
+        return Response.json(populatedBooking, { status: 200 });
 
     } catch (error) {
+        console.error(error); // ✅ log internally
         return Response.json(
-            { message: `create booking error ${error}` },
+            { message: "Internal server error" },
             { status: 500 }
-        )
+        );
     }
 }

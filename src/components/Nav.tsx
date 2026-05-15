@@ -16,7 +16,11 @@ import { auth } from '@/auth'
 
 
 const Nav = () => {
-    const Nav_Items = ["Home", "Bookings", "About Us", "Contact"]
+    const USER_NAV_ITEMS = ["Home", "Bookings", "About Us", "Contact"];
+
+    const PARTNER_NAV_ITEMS = ["Home", "Bookings", "Pending Requests", "Active Ride"];
+
+
     const pathName = usePathname()
     const [authOpen, setAuthOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
@@ -61,6 +65,11 @@ const Nav = () => {
         ? "bg-black text-white" // Black bg, white text on scroll
         : "bg-white text-black"; // White bg, black text when at top
 
+
+    const navItems =
+        userData?.role === "partner"
+            ? PARTNER_NAV_ITEMS
+            : USER_NAV_ITEMS;
     return (
         <>
             <motion.div
@@ -92,8 +101,18 @@ const Nav = () => {
 
                     {/* Nav Links */}
                     <div className='hidden md:flex items-center gap-8 relative'>
-                        {Nav_Items.map((i, index) => {
-                            let href = i === "Home" ? `/` : `/${i.toLowerCase().replace(/\s+/g, "")}`
+
+
+
+
+                        {navItems.map((i, index) => {
+
+                            const basePath =
+                                userData?.role === "partner"
+                                    ? "/partner"
+                                    : "/user";
+
+                            let href = i === "Home" ? `/` : `${basePath}/${i.toLowerCase().replace(/\s+/g, "")}`
                             const active = href === pathName
 
                             return (
@@ -106,7 +125,9 @@ const Nav = () => {
                                             : (scrolled ? "text-gray-600 hover:text-black" : "text-gray-300 hover:text-white")
                                         }`}
                                 >
-                                    {i}
+                                    {i} {userData?.role == "partner" && i == "Pending Requests" &&
+                                        <span className='absolute -top-2 -right-5 w-6 h-6 bg-white text-black text-xs 
+                                    rounded-full flex items-center justify-center font-bold'>0</span>}
                                     {active && (
                                         <motion.span
                                             layoutId="nav-underline"
@@ -219,9 +240,14 @@ const Nav = () => {
                             className="fixed top-[85px] left-1/2 -translate-x-1/2 w-[92%] bg-[#0B0B0B]/95 backdrop-blur-lg rounded-2xl shadow-2xl z-40 md:hidden overflow-hidden border border-white/10"
                         >
                             <div className="flex flex-col p-2">
-                                {Nav_Items.map((i, index) => {
-                                    const href = i === "Home" ? `/` : `/${i.toLowerCase().replace(/\s+/g, "")}`;
-                                    const active = href === pathName;
+                                {navItems.map((i, index) => {
+                                    const basePath =
+                                        userData?.role === "partner"
+                                            ? "/partner"
+                                            : "/user";
+
+                                    let href = i === "Home" ? `/` : `${basePath}/${i.toLowerCase().replace(/\s+/g, "")}`
+                                    const active = href === pathName
                                     return (
                                         <Link
                                             href={href}

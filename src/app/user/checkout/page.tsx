@@ -83,6 +83,8 @@ const page = () => {
                 fare,
                 mobileNumber: mobile?.trim()
             });
+            console.log(data);
+
             toast.success("Booking request sent successfully!");
 
         } catch (error: any) {
