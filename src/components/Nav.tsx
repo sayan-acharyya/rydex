@@ -13,6 +13,7 @@ import { signOut } from 'next-auth/react'
 import { setUserData } from '@/redux/userSlice'
 import toast from 'react-hot-toast'
 import { auth } from '@/auth'
+import axios from 'axios'
 
 
 const Nav = () => {
@@ -26,6 +27,7 @@ const Nav = () => {
     const [profileOpen, setProfileOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [pendingRequestCount, setPendingRequestCount] = useState(0);
 
     const router = useRouter();
 
@@ -70,6 +72,26 @@ const Nav = () => {
         userData?.role === "partner"
             ? PARTNER_NAV_ITEMS
             : USER_NAV_ITEMS;
+
+
+
+    const fetchCount = async () => {
+        try {
+            const { data } = await axios.get("/api/partner/bookings/pending-request-count");
+            setPendingRequestCount(data);
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    useEffect(() => {
+        if (userData?.role === "partner") {
+            fetchCount();
+        }
+    }, [userData?.role])
+
     return (
         <>
             <motion.div
@@ -127,7 +149,7 @@ const Nav = () => {
                                 >
                                     {i} {userData?.role == "partner" && i == "Pending Requests" &&
                                         <span className='absolute -top-2 -right-5 w-6 h-6 bg-white text-black text-xs 
-                                    rounded-full flex items-center justify-center font-bold'>0</span>}
+                                    rounded-full flex items-center justify-center font-bold'>{pendingRequestCount}</span>}
                                     {active && (
                                         <motion.span
                                             layoutId="nav-underline"
