@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { ArrowRight, Bike, Car, Clock, CreditCard, IndianRupee, MapPin, Navigation, ShieldCheck, Truck } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const VEHICLE_META: any = {
     bike: {
@@ -48,10 +49,10 @@ const page = () => {
 
 
     const mobile = params.get("mobile");
-    const pickUpLat = Number(params.get("pickuplat"))
-    const pickUpLon = Number(params.get("pickuplon"))
-    const dropLat = Number(params.get("droplat"))
-    const dropLon = Number(params.get("droplon"))
+    const pickUpLat = Number(params.get("pickUpLat"));
+    const pickUpLon = Number(params.get("pickUpLon"));
+    const dropLat = Number(params.get("dropLat"));
+    const dropLon = Number(params.get("dropLon"));
     const vehicle = params.get("vehicle") || ""
     const driverId = params.get("driverId") || "";
     const vehicleId = params.get("vehicleId") || "";
@@ -80,12 +81,14 @@ const page = () => {
                     coordinates: [dropLon, dropLat]
                 },
                 fare,
-                mobileNumber: mobile
+                mobileNumber: mobile?.trim()
             });
-            console.log(data);
+            toast.success("Booking request sent successfully!");
 
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            toast.error(
+                error?.response?.data?.message || "Something went wrong"
+            );
 
         }
     }
@@ -281,5 +284,3 @@ const page = () => {
 }
 
 export default page;
-
-//7:37:330
