@@ -1,7 +1,7 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from "motion/react"
-import { ArrowRight, Bike, Car, Clock, CreditCard, IndianRupee, MapPin, Navigation, ShieldCheck, Truck } from 'lucide-react';
+import { Wallet, ArrowRight, BadgeCheck, Banknote, Bike, Car, CheckCheck, CheckCheckIcon, CheckCircle, CheckCircle2, Clock, CreditCard, IndianRupee, Loader, Loader2, MapPin, Navigation, ShieldCheck, Truck, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -64,8 +64,12 @@ const page = () => {
     const { icon: Icon, label } = VEHICLE_META[vehicle];
 
     const [status, setStatus] = useState<Status>("idle");
+    const [loading, setLoading] = useState(false);
+    const [booking, setBooking] = useState<any>();
+    const [paymentMethod, setPaymentMethod] = useState<"cash" | "online">("cash");
 
     const handleRequestBooking = async () => {
+        setLoading(true)
         try {
             const { data } = await axios.post("/api/booking/create", {
                 driverId,
@@ -86,14 +90,63 @@ const page = () => {
             console.log(data);
 
             toast.success("Booking request sent successfully!");
+            setBooking(data)
+            setLoading(false)
+            setStatus("requested");
 
         } catch (error: any) {
             toast.error(
                 error?.response?.data?.message || "Something went wrong"
             );
-
+            setLoading(false);
         }
     }
+
+    const fetchActiveBooking = async () => {
+        try {
+            const { data } = await axios.get("/api/booking/active");
+            setBooking(data.booking);
+            setStatus(data.booking.bookingStatus || "idle");
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleCancleBooking = async () => {
+        try {
+            const { data } = await axios.get(`/api/booking/${booking._id}/cancel`);
+
+            console.log("Cancel Booking Response:", data); // ✅ log success
+
+            toast.success("Booking cancelled");
+
+            router.back(); // ✅ go one step back
+
+        } catch (error: any) {
+            console.log("Cancel Booking Error:", error?.response || error); // ✅ log error
+
+            toast.error(
+                error?.response?.data?.message || "Failed to cancel booking"
+            );
+        }
+    };
+
+    useEffect(() => {
+        fetchActiveBooking()
+    }, [])
+
+    useEffect(() => {
+        if (status !== "awaiting_payment") {
+            return;
+        }
+
+        const t = setTimeout(() => {
+            setStatus("payment")
+        }, 2000)
+
+        return () => { clearTimeout(t) }
+    }, [status]);
 
     return (
         <div className='min-h-screen bg-zinc-100 px-4 py-12'>
@@ -263,19 +316,157 @@ const page = () => {
 
                                             <motion.button
                                                 onClick={handleRequestBooking}
+                                                disabled={loading}
                                                 whileTap={{ scale: 0.97 }}
                                                 whileHover={{ scale: 1.02 }}
                                                 className='w-full h-14 mt-8 bg-zinc-900 hover:bg-black disabled:opacity-40
                                                 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-colors shadow-md'
                                             >
-                                                <span className='flex gap-2 items-center'> Request Ride <ArrowRight size={18} /></span>
+                                                {loading ? <span className='flex gap-1 items-center'> Requesting<Loader2 size={18} className='animate-spin' /></span> :
+                                                    <span className='flex gap-2 items-center'> Request Ride <ArrowRight size={18} /></span>}
                                             </motion.button>
 
                                         </motion.div>
                                     )
                                 }
+
+                                {
+                                    status == "requested" && (
+                                        <motion.div
+                                            key={"requested"}
+                                            initial={{ opacity: 0, scale: 0.96 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.35 }}
+                                            className='flex flex-col flex-1 items-center justify-center gap-6 text-center'
+                                        >
+                                            <div className='relative'>
+                                                <motion.div
+                                                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+                                                    transition={{ duration: 2, repeat: Infinity }}
+                                                    className='absolute inset-0 rounded-full bg-zinc-900'
+                                                />
+                                                <div className='relative w-20 h-20 rounded-full bg-zinc-100 border-2 
+                                                border-zinc-200 flex items-center justify-center'>
+                                                    <Loader2 size={28} className='text-zinc-900 animate-spin' />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h3 className='text-xl font-black text-zinc-900 mb-1'>Finding Your Driver</h3>
+                                                <p className='text-zinc-400 text-sm font-medium'>Waiting for driver to accept...</p>
+                                            </div>
+
+                                            <motion.div
+                                                whileTap={{ scale: 0.95 }}
+                                                onClick={handleCancleBooking}
+                                                className='flex items-center gap-2 text-xs font-bold text-zinc-400 
+                                                hover:text-red-800 transition-colors border border-zinc-200 hover:border-zinc-400 px-4 py-2.5 rounded-xl'
+                                            >
+                                                <XCircle size={18} />Cancle Request
+                                            </motion.div>
+
+                                        </motion.div>
+                                    )
+                                }
+
+                                {
+                                    status == "awaiting_payment" && (
+                                        <motion.div
+                                            key={"awaiting_payment"}
+                                            initial={{ opacity: 0, scale: 0.94 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.35 }}
+                                            className='flex flex-col flex-1 items-center justify-center gap-5 text-center'
+                                        >
+                                            <motion.div
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ type: "spring", stiffness: 260, damping: 16 }}
+                                                className='w-20 h-20 rounded-full bg-zinc-100 border-2 border-zinc-200 flex 
+                                                items-center justify-center'
+                                            >
+                                                <BadgeCheck size={40} className='text-green-800' />
+                                            </motion.div>
+
+                                            <div>
+                                                <h3 className='text-xl font-black text-zinc-900 mb-1'>
+                                                    Driver Accepted
+                                                </h3>
+                                                <p className='text-zinc-400 text-sm font-medium'
+                                                >Preparing payment options...
+                                                </p>
+                                            </div>
+
+                                            <div className='w-48 h-1.5 bg-zinc-100 rounded-full overflow-hidden'>
+                                                <motion.div
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: "100%" }}
+                                                    transition={{ duration: 2 }}
+                                                    className='h-full bg-zinc-900 rounded-full'
+                                                />
+                                            </div>
+
+                                        </motion.div>
+                                    )
+                                }
+
+                                {
+                                    status == "payment" && (
+                                        <motion.div
+                                            key={"payment"}
+                                            initial={{ opacity: 0, y: 12 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className='flex flex-col flex-1 gap-6'
+                                        >
+                                            <div>
+                                                <p className='text-[10px] font-black uppercase
+                                                 tracking-[0.18em] text-zinc-400 mb-1'>
+                                                    Almost There
+                                                </p>
+                                                <h3 className='text-2xl font-black text-zinc-900'>Select Payment Method</h3>
+                                            </div>
+
+                                            <div>
+                                                {
+                                                    [
+                                                        { id: "cash", Icon: Banknote, title: "Cash", sub: "Pay driver after ride" },
+                                                        { id: "online", Icon: Wallet, title: "Online Payment", sub: "UPI · Card · Netbanking" }
+
+                                                    ].map((p, i) => {
+                                                        const active = paymentMethod == p.id
+                                                        return (
+                                                            <motion.div
+                                                                key={p.id}
+                                                                whileTap={{ scale: 0.97 }}
+                                                                onClick={() => setPaymentMethod(p.id as any)}
+                                                                className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2
+                                                                    text-left transition-all duration-200 ${active ? "bg-zinc-900 border-zinc-900" : "bg-zinc-50 border-zinc-200 hover:border-zinc-400"
+                                                                    }`}
+                                                            >
+                                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors 
+                                                                    ${active ? "bg-white/10" : "bg-zinc-200 "}`}>
+                                                                    <p.Icon size={18} className={active ? "text-white" : "text-zinc-600"} />
+                                                                </div>
+                                                                <div>
+                                                                    <p>{p.id}</p>
+                                                                    <p>{p.sub}</p>
+                                                                </div>
+                                                            </motion.div>
+                                                        )
+                                                    })
+
+                                                }
+                                            </div>
+                                        </motion.div>
+                                    )
+                                }
                             </AnimatePresence>
-                            
+
+
                         </div>
                     </motion.div>
 
