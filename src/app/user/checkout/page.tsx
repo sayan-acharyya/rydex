@@ -430,7 +430,7 @@ const page = () => {
                                                 <h3 className='text-2xl font-black text-zinc-900'>Select Payment Method</h3>
                                             </div>
 
-                                            <div>
+                                            <div className='space-y-3'>
                                                 {
                                                     [
                                                         { id: "cash", Icon: Banknote, title: "Cash", sub: "Pay driver after ride" },
@@ -451,16 +451,54 @@ const page = () => {
                                                                     ${active ? "bg-white/10" : "bg-zinc-200 "}`}>
                                                                     <p.Icon size={18} className={active ? "text-white" : "text-zinc-600"} />
                                                                 </div>
-                                                                <div>
-                                                                    <p>{p.id}</p>
-                                                                    <p>{p.sub}</p>
+                                                                <div className='flex-1 min-w-0'>
+                                                                    <p className={`text-sm font-bold ${active ? "text-white" : "text-zinc-900"}`}>{p.title}</p>
+                                                                    <p className={`text-xs font-medium ${active ? "text-zinc-400" : "text-zinc-400"}`}>{p.sub}</p>
                                                                 </div>
+
+                                                                <AnimatePresence>
+                                                                    {
+                                                                        active && (
+                                                                            <motion.div
+                                                                                initial={{ scale: 0 }}
+                                                                                animate={{ scale: 1 }}
+                                                                                exit={{ scale: 0 }}
+                                                                            >
+                                                                                <CheckCircle size={18} className='text-white shrink-0' />
+                                                                            </motion.div>
+                                                                        )
+                                                                    }
+                                                                </AnimatePresence>
+
+
                                                             </motion.div>
                                                         )
                                                     })
 
                                                 }
                                             </div>
+
+                                            <motion.button
+                                                whileTap={{ scale: 0.97 }}
+                                                whileHover={paymentMethod ? { scale: 1.02 } : {}}
+                                                disabled={!paymentMethod}
+                                                className='w-full h-14 bg-zinc-900 hover:bg-black disabled:opacity-30 
+                                                text-white font-black text-sm rounded-2xl flex items-center justify-center gap-2.5 
+                                                transition-colors shadow-md mt-auto'
+                                            >
+                                                {
+                                                    paymentMethod == "cash" ? (
+                                                        <>
+                                                            <Banknote size={16}/><span>Confirm Cash Ride</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <span>Proceed to Payment</span> <ArrowRight size={16}/>
+                                                        </>
+                                                    )
+                                                }
+                                            </motion.button>
+
                                         </motion.div>
                                     )
                                 }
