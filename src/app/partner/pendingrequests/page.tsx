@@ -5,6 +5,7 @@ import axios from 'axios'
 import { BookingStatus, PaymentStatus } from '@/models/booking.model'
 import { Clock, IndianRupee, Loader2, MapPin, Navigation } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 
 interface IBooking {
@@ -53,6 +54,8 @@ const page = () => {
     const [bookings, setBookings] = useState<IBooking[]>([]);
     const [loading, setLoading] = useState(false);
 
+    const router = useRouter();
+
     const fetchPendingRequest = async () => {
         try {
             setLoading(true)
@@ -69,7 +72,8 @@ const page = () => {
         try {
             const { data } = await axios.get(`/api/partner/bookings/${id}/accept`);
             console.log(data);
-            toast.success("Ride request accepted")
+            toast.success("Ride request accepted");
+            router.push("/");
 
         } catch (error) {
             console.log(error);
@@ -82,6 +86,7 @@ const page = () => {
             const { data } = await axios.get(`/api/partner/bookings/${id}/reject`);
             console.log(data);
             toast.success("Ride request rejected")
+            router.push("/");
 
         } catch (error) {
             console.log(error);
@@ -185,9 +190,9 @@ const page = () => {
                                                 active:scale-[0.98] disabled:opacity-50'>
                                                     Reject
                                                 </button>
-                                                <button 
-                                                 onClick={() => handleAccepted(b._id)}
-                                                className='flex-1 lg:flex-none px-8 py-3 rounded-xl bg-black text-white text-sm font-semibold
+                                                <button
+                                                    onClick={() => handleAccepted(b._id)}
+                                                    className='flex-1 lg:flex-none px-8 py-3 rounded-xl bg-black text-white text-sm font-semibold
                                                 shadow-md hover:bg-gray-900 hover:shadow-lg transition-all duration-200 active:scale-[0.98] 
                                                 disabled:opacity-50 flex items-center justify-center'>
                                                     Accept Ride
