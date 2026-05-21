@@ -132,6 +132,63 @@ const page = () => {
         }
     };
 
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+
+            if (typeof window === "undefined") {
+                resolve(false);
+                return;
+            }
+
+            if ((window as any).Razorpay) {
+                resolve(true);
+                return;
+            }
+
+            const script = document.createElement("script")
+            script.src = "https://checkout.razorpay.com/v1/checkout.js"
+            script.onload = () => resolve(true)
+            script.onerror = () => resolve(false)
+            document.body.appendChild(script)
+        })
+    }
+
+    const handleConfirmPayment = async () => {
+        if (!booking || !paymentMethod) return;
+
+        try {
+            if (paymentMethod == "online") {
+                const razorpayLoaded = await loadRazorpayScript()
+                if (!razorpayLoaded) {
+                    alert("razorpay script failed to load")
+                }
+
+                const { data } = await axios.post("/api/payment/create",
+                    { bookingId: booking._id });
+
+                const options = {
+                    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                    amount: data.amount,
+                    currency: "INR",
+                    name: "RYDEX",
+                    description: "Ride Payment",
+                    order_id: data.orderId,
+                    handler: async function (response: any) {
+                        //35:30
+                    }
+                }
+
+                const paymentObject = new (window as any).Razorpay(options)
+
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+
     useEffect(() => {
         fetchActiveBooking()
     }, [])
@@ -480,6 +537,7 @@ const page = () => {
 
                                             <motion.button
                                                 whileTap={{ scale: 0.97 }}
+                                                onClick={handleConfirmPayment}
                                                 whileHover={paymentMethod ? { scale: 1.02 } : {}}
                                                 disabled={!paymentMethod}
                                                 className='w-full h-14 bg-zinc-900 hover:bg-black disabled:opacity-30 
@@ -489,11 +547,11 @@ const page = () => {
                                                 {
                                                     paymentMethod == "cash" ? (
                                                         <>
-                                                            <Banknote size={16}/><span>Confirm Cash Ride</span>
+                                                            <Banknote size={16} /><span>Confirm Cash Ride</span>
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <span>Proceed to Payment</span> <ArrowRight size={16}/>
+                                                            <span>Proceed to Payment</span> <ArrowRight size={16} />
                                                         </>
                                                     )
                                                 }
