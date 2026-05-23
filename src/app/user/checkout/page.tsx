@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from "motion/react"
-import { Wallet, ArrowRight, BadgeCheck, Banknote, Bike, Car, CheckCheck, CheckCheckIcon, CheckCircle, CheckCircle2, Clock, CreditCard, IndianRupee, Loader, Loader2, MapPin, Navigation, ShieldCheck, Truck, XCircle } from 'lucide-react';
+import { Wallet, ArrowRight, BadgeCheck, Banknote, Bike, Car, CheckCheck, CheckCheckIcon, CheckCircle, CheckCircle2, Clock, CreditCard, IndianRupee, Loader, Loader2, MapPin, Navigation, ShieldCheck, Truck, XCircle, CheckCircle2Icon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -67,6 +67,7 @@ const page = () => {
     const [loading, setLoading] = useState(false);
     const [booking, setBooking] = useState<any>();
     const [paymentMethod, setPaymentMethod] = useState<"cash" | "online">("cash");
+
 
     const handleRequestBooking = async () => {
         setLoading(true)
@@ -155,6 +156,7 @@ const page = () => {
 
     const handleConfirmPayment = async () => {
         if (!booking || !paymentMethod) return;
+        setLoading(true);
 
         try {
             if (paymentMethod == "online") {
@@ -173,17 +175,37 @@ const page = () => {
                     name: "RYDEX",
                     description: "Ride Payment",
                     order_id: data.orderId,
-                    
+                    handler: async function (response: any) {
+
+                        const { data } = await axios.post("/api/payment/verify", {
+                            bookingId: booking._id,
+                            ...response
+                        })
+                        setLoading(false);
+                        if (data.success) {
+                            setStatus("confirmed");
+                            window.location.href = `/ride/${booking._id}`
+                        }
+                    }
                 }
 
                 const paymentObject = new (window as any).Razorpay(options)
 
                 paymentObject.open()
-     
+
+            } else {
+                const { data } = await axios.get(`/api/booking/${booking._id}/confirm`);
+                setLoading(false);
+                if (data.success) {
+                    setStatus("confirmed");
+                    window.location.href = `/ride/${booking._id}`
+
+                }
             }
 
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            setLoading(false);
         }
 
     }
@@ -544,7 +566,7 @@ const page = () => {
                                                 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-2.5 
                                                 transition-colors shadow-md mt-auto'
                                             >
-                                                {
+                                                {loading ? <Loader2 size={17} className='animate-spin' /> :
                                                     paymentMethod == "cash" ? (
                                                         <>
                                                             <Banknote size={16} /><span>Confirm Cash Ride</span>
@@ -560,12 +582,44 @@ const page = () => {
                                         </motion.div>
                                     )
                                 }
+
+                                {status == "confirmed" && (
+                                    <motion.div
+                                        key={"confirmed"}
+                                        initial={{ opacity: 0, scale: 0.94 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.4 }}
+                                        className='flex flex-col flex-1 items-center justify-center gap-6 text-center'
+                                    >
+                                        <motion.div
+                                            initial={{ scale: 0, rotate: -20 }}
+                                            animate={{ scale: 1, rotate: 0 }}
+                                            transition={{ type: "spring", stiffness: 240, damping: 14, delay: 0.1 }}
+                                            className='relative'
+                                        >
+                                            <div className='w-24 h-24 rounded-full bg-zinc-100 border-2 border-zinc-200 
+                                            flex items-center justify-center'>
+                                                <CheckCircle size={44} className='text-green-700' />
+                                            </div>
+                                            {[0, 1].map((i) => (
+                                                <motion.div
+                                                    initial={{ scale: 1, opacity: 0.5 }}
+                                                    animate={{ scale: 2.2 + i * 0.6, opacity: 0 }}
+                                                    transition={{ duration: 0.9, delay: 0.2 + i * 0.15 }}
+                                                    className='absolute inset-0 rounded-full border-2 border-zinc-900'
+                                                />
+                                            ))}
+
+                                        </motion.div>
+                                        <div>
+
+                                        </div>
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
-
-
                         </div>
                     </motion.div>
-
 
                 </div>
             </div>
