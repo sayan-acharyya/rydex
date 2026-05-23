@@ -71,9 +71,9 @@ const page = () => {
     const handleAccepted = async (id: string) => {
         try {
             const { data } = await axios.get(`/api/partner/bookings/${id}/accept`);
-            console.log(data);
+            
             toast.success("Ride request accepted");
-            router.push("/");
+            router.push("/partner/bookings")
 
         } catch (error) {
             console.log(error);
@@ -84,9 +84,9 @@ const page = () => {
     const handleRejected = async (id: string) => {
         try {
             const { data } = await axios.get(`/api/partner/bookings/${id}/reject`);
-            console.log(data);
+             
             toast.success("Ride request rejected")
-            router.push("/");
+            window.location.reload();
 
         } catch (error) {
             console.log(error);
