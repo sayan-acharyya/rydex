@@ -173,13 +173,13 @@ const page = () => {
                     name: "RYDEX",
                     description: "Ride Payment",
                     order_id: data.orderId,
-                    handler: async function (response: any) {
-                        //35:30
-                    }
+                    
                 }
 
                 const paymentObject = new (window as any).Razorpay(options)
 
+                paymentObject.open()
+     
             }
 
         } catch (error) {
