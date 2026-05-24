@@ -336,8 +336,6 @@ const page = () => {
                         }
                         </div>
 
-                        
-
                       </div>
                     </motion.div>
                   ))
@@ -352,4 +350,5 @@ const page = () => {
   )
 }
 
-export default page
+export default page;
+//2:16:50
