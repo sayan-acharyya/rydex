@@ -50,7 +50,9 @@ interface IBooking {
 
 
 const page = () => {
-  const [bookings, setBookings] = useState<IBooking[] | []>([])
+  const [bookings, setBookings] = useState<IBooking[] | []>([]);
+  const [filterBookings, setFilterBookings] = useState<IBooking[]>([]);
+  const [selectStatus, setSelectStatus] = useState("All");
 
   useEffect(() => {
     const fetch = async () => {
@@ -66,6 +68,11 @@ const page = () => {
     fetch();
   }, []);
 
+  const filteredBookings = selectStatus === "All" 
+  ? bookings 
+  : bookings.filter(b=>b.bookingStatus === selectStatus.toLowerCase());
+
+  //1:42:00
   return (
     <div className='min-h-screen bg-gray-50'>
       {/* heading */}
@@ -92,8 +99,13 @@ const page = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
         <div className='max-w-3xl mx-auto'>
 
-          <div className='flex justify-between'>
+          <div className='flex justify-between items-center mb-6'>
+            <div className='text-sm text-gray-500'>
+              Showing {filterBookings.length} bookings
+            </div>
+            <select>
 
+            </select>
           </div>
 
         </div>
