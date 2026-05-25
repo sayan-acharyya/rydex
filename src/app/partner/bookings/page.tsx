@@ -8,6 +8,8 @@ import { Bike, Calendar, Car, ChevronRight, IndianRupee, Loader2, MapPin, Phone,
 import React, { useEffect, useState } from 'react'
 import { motion } from "motion/react"
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 
 interface IBooking {
@@ -72,6 +74,9 @@ const page = () => {
     }
     fetch();
   }, []);
+
+  const { userData } = useSelector((state: RootState) => state.user)
+
 
   const filterBookings = selectStatus === "All"
     ? bookings
@@ -153,8 +158,9 @@ const page = () => {
 
               {/* Right Badge */}
               <div className="hidden sm:flex items-center">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                  Active
+                <span className="px-3 py-1 flex items-center gap-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                  <User size={14} />
+                  Driver • {userData?.name}
                 </span>
               </div>
 
@@ -322,18 +328,18 @@ const page = () => {
                             </span>
                           </div>
                           {
-                          b.bookingStatus !== "completed" && (
-                            <div className='flex items-center gap-2'>
-                              <button
-                                onClick={() => router.push(`/partner/active-ride`)}
-                                className='flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700
+                            b.bookingStatus !== "completed" && (
+                              <div className='flex items-center gap-2'>
+                                <button
+                                  onClick={() => router.push(`/partner/active-ride`)}
+                                  className='flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700
                               bg-blue-50 hover:bg-blue-100 px-4 py-1.5 rounded-lg transition-colors'>
-                                <span>Details</span>
-                                <ChevronRight className='w-4 h-4'/>
-                              </button>
-                            </div>
-                          )
-                        }
+                                  <span>Details</span>
+                                  <ChevronRight className='w-4 h-4' />
+                                </button>
+                              </div>
+                            )
+                          }
                         </div>
 
                       </div>
@@ -351,4 +357,3 @@ const page = () => {
 }
 
 export default page;
-//2:16:50
