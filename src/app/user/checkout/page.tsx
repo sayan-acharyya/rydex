@@ -1,10 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from "motion/react"
-import { Wallet, ArrowRight, BadgeCheck, Banknote, Bike, Car, CheckCheck, CheckCheckIcon, CheckCircle, CheckCircle2, Clock, CreditCard, IndianRupee, Loader, Loader2, MapPin, Navigation, ShieldCheck, Truck, XCircle, CheckCircle2Icon } from 'lucide-react';
+import { Wallet, ArrowRight, BadgeCheck, Banknote, Bike, Car, CheckCheck, CheckCheckIcon, CheckCircle, CheckCircle2, Clock, CreditCard, IndianRupee, Loader, Loader2, MapPin, Navigation, ShieldCheck, Truck, XCircle, CheckCircle2Icon, ArrowLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { getSocket } from '@/lib/socket';
 
 const VEHICLE_META: any = {
     bike: {
@@ -133,6 +134,33 @@ const page = () => {
         }
     };
 
+    useEffect(() => {
+        const socket = getSocket();
+        socket.on("accept-booking", (data) => {
+            setStatus(data)
+        })
+
+        return () => {
+            socket.off("accept-booking")
+
+        }
+    }, []);
+
+
+    useEffect(() => {
+        const socket = getSocket();
+
+        socket.on("reject-booking", (data) => {
+            setStatus("idle")
+        })
+        return () => {
+
+            socket.off("reject-booking")
+        }
+    }, []);
+
+
+
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
 
@@ -215,6 +243,7 @@ const page = () => {
         fetchActiveBooking()
     }, [])
 
+
     useEffect(() => {
         if (status !== "awaiting_payment") {
             return;
@@ -229,6 +258,12 @@ const page = () => {
 
     return (
         <div className='min-h-screen bg-zinc-100 px-4 py-12'>
+            <button
+                onClick={() => router.back()}
+                className="fixed top-1 left-3 sm:top-6 sm:left-6      z-50 w-11 h-11 rounded-full bg-white border border-zinc-200 shadow-md flex items-center justify-center hover:bg-zinc-50 transition-colors"
+            >
+                <ArrowLeft size={18} />
+            </button>
             <div className='relative max-w-6xl mx-auto z-10'>
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
@@ -347,7 +382,7 @@ const page = () => {
                         <div className='flex-1 p-8 sm:p-10 flex flex-col'>
                             <AnimatePresence mode='wait'>
                                 {
-                                    status === "idle" && (
+                                    (status === "idle" || status === "rejected") && (
                                         <motion.div
                                             key={"idle"}
                                             initial={{ opacity: 0, y: 12 }}

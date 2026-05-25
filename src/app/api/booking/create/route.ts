@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import connectDb from "@/lib/db";
 import Booking from "@/models/booking.model";
 import User from "@/models/user.model";
+import axios from "axios";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -83,6 +84,12 @@ export async function POST(req: NextRequest) {
             .populate("driver")
             .populate("user")
             .populate("vehicle");
+
+        await axios.post(`${process.env.NEXT_PUBLIC_SOCKET_SERVER_URL}/emit`, {
+            event: "new-booking",
+            userId: driverId,
+            data: booking
+        })
 
         return Response.json(populatedBooking, { status: 200 });
 

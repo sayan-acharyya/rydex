@@ -14,6 +14,7 @@ import { setUserData } from '@/redux/userSlice'
 import toast from 'react-hot-toast'
 import { auth } from '@/auth'
 import axios from 'axios'
+import { getSocket } from '@/lib/socket'
 
 
 const Nav = () => {
@@ -91,6 +92,16 @@ const Nav = () => {
             fetchCount();
         }
     }, [userData?.role])
+
+    useEffect(() => {
+        const socket = getSocket();
+        socket.on("new-booking", (data) => {
+            setPendingRequestCount(pendingRequestCount + 1)
+        })
+        return () => {
+            socket.off("new-booking")
+        }
+    }, []);
 
     return (
         <>

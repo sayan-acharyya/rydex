@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { motion } from "motion/react"
 import axios from 'axios'
 import { BookingStatus, PaymentStatus } from '@/models/booking.model'
-import { Clock, IndianRupee, Loader2, MapPin, Navigation } from 'lucide-react'
+import { ArrowLeft, Clock, IndianRupee, Loader2, MapPin, Navigation } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
+import { getSocket } from '@/lib/socket'
 
 
 interface IBooking {
@@ -71,7 +72,7 @@ const page = () => {
     const handleAccepted = async (id: string) => {
         try {
             const { data } = await axios.get(`/api/partner/bookings/${id}/accept`);
-            
+
             toast.success("Ride request accepted");
             router.push("/partner/bookings")
 
@@ -84,7 +85,7 @@ const page = () => {
     const handleRejected = async (id: string) => {
         try {
             const { data } = await axios.get(`/api/partner/bookings/${id}/reject`);
-             
+
             toast.success("Ride request rejected")
             window.location.reload();
 
@@ -98,14 +99,37 @@ const page = () => {
         fetchPendingRequest();
     }, []);
 
+    useEffect(() => {
+        const socket = getSocket();
+        socket.on("new-booking", (data) => {
+            setBookings((prev) => [...prev, data])
+        })
+        return () => {
+            socket.off("new-booking")
+        }
+    }, []);
+
     return (
         <div className='min-h-screen bg-[#f4f5f7]'>
             <div className='bg-white border-b border-gray-200'>
                 <div className='max-w-6xl mx-auto px-6 py-16'>
-                    <h1 className='text-4xl font-semibold text-gray-900 '>Ride Requests</h1>
-                    <p className='mt-3 text-gray-500 text-lg'>
-                        Manage incoming ride requests and respond in real time.
-                    </p>
+                    <div className='flex items-start gap-4'>
+                        <button
+                            onClick={() => router.back()}
+                            className='mt-1 w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors'
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+
+                        <div>
+                            <h1 className='text-4xl font-semibold text-gray-900'>
+                                Ride Requests
+                            </h1>
+                            <p className='mt-3 text-gray-500 text-lg'>
+                                Manage incoming ride requests and respond in real time.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 

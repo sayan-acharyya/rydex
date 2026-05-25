@@ -4,7 +4,7 @@ import { BookingStatus, PaymentStatus } from '@/models/booking.model';
 import { IUser } from '@/models/user.model';
 import { IVehicle } from '@/models/vehicle.model';
 import axios from 'axios'
-import { Bike, Calendar, Car, ChessKing, ChevronRight, Crown, IndianRupee, Loader2, MapPin, Phone, Shield, ShieldUser, Truck, User } from 'lucide-react';
+import { ArrowLeft, Bike, Calendar, Car, ChessKing, ChevronRight, Crown, IndianRupee, Loader2, MapPin, Phone, Shield, ShieldUser, Truck, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { motion } from "motion/react"
 import { useRouter } from 'next/navigation';
@@ -137,6 +137,13 @@ const page = () => {
 
                             {/* Left Content */}
                             <div className="flex items-center gap-4">
+
+                                <button
+                                    onClick={() => router.back()}
+                                    className="h-11 w-11 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center transition-colors"
+                                >
+                                    <ArrowLeft className="w-5 h-5 text-gray-700" />
+                                </button>
 
                                 <div className="h-11 w-11 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100">
                                     <Car className="w-5 h-5 text-blue-600" />
