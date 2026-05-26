@@ -3,6 +3,9 @@ import LiveRideMap from '@/components/LiveRideMap';
 import { BookingStatus, IBooking } from '@/models/booking.model';
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { motion } from "motion/react"
+import { Zap } from 'lucide-react';
+import PanelContent from '@/components/PanelContent';
 
 const MAP_STATUS: Record<
     BookingStatus,
@@ -21,6 +24,68 @@ const MAP_STATUS: Record<
     expired: "completed",
 };
 
+const STATUS_LABEL: Record<
+    BookingStatus,
+    {
+        label: string;
+        sublabel: string;
+        dot: string;
+    }
+> = {
+    idle: {
+        label: "Awaiting Confirmation",
+        sublabel: "Booking is being processed",
+        dot: "bg-amber-400",
+    },
+    requested: {
+        label: "Awaiting Confirmation",
+        sublabel: "Booking is being processed",
+        dot: "bg-amber-400",
+    },
+
+    awaiting_payment: {
+        label: "Payment Pending",
+        sublabel: "Customer payment is pending",
+        dot: "bg-purple-400",
+    },
+
+    confirmed: {
+        label: "Heading to Pickup",
+        sublabel: "Driver is heading to the pickup location",
+        dot: "bg-amber-400",
+    },
+
+    started: {
+        label: "Ride in Progress",
+        sublabel: "Heading to drop location",
+        dot: "bg-emerald-400",
+    },
+
+    completed: {
+        label: "Ride Completed",
+        sublabel: "Trip has ended successfully",
+        dot: "bg-zinc-400",
+    },
+
+    cancelled: {
+        label: "Ride Cancelled",
+        sublabel: "This ride was cancelled",
+        dot: "bg-red-400",
+    },
+
+    rejected: {
+        label: "Ride Rejected",
+        sublabel: "Ride was rejected",
+        dot: "bg-red-400",
+    },
+
+    expired: {
+        label: "Request Expired",
+        sublabel: "Booking timed out",
+        dot: "bg-orange-400",
+    },
+};
+
 const page = () => {
 
     const [booking, setBooking] = useState<IBooking | null>(null);
@@ -28,6 +93,11 @@ const page = () => {
     const [driverPos, setDriverPos] = useState<[Number, Number] | null>(null);
     const [pickUpPos, setPickUpPos] = useState<[Number, Number] | null>(null);
     const [dropPos, setDropPos] = useState<[Number, Number] | null>(null);
+    const [distanceToPickup, setDistanceToPickup] = useState(0);
+    const [distanceToDrop, setDistanceToDrop] = useState(0);
+    const [etaToPickUp, setEtaToPickUp] = useState(0);
+    const [etaToDrop, setEtaToDrop] = useState(0);
+    const [status, setStatus] = useState("")
 
 
     useEffect(() => {
@@ -36,6 +106,7 @@ const page = () => {
             try {
                 const { data } = await axios.get("/api/partner/my-active")
                 setBooking(data);
+                setStatus(data.bookingStatus)
                 setPickUpPos([data.pickUpLocation.coordinates[1], data.pickUpLocation.coordinates[0]]);
                 setDropPos([data.dropLocation.coordinates[1], data.dropLocation.coordinates[0]]);
                 setLoading(false);
@@ -74,6 +145,14 @@ const page = () => {
         );
     }
 
+    const cfg = STATUS_LABEL[booking?.bookingStatus! ?? "confirmed"]
+    const isActive = ["confirmed", "started"].includes(status)
+    const displayEta = status === "confirmed" ? etaToPickUp : etaToDrop
+    const displayDistance = status === "confirmed" ? distanceToPickup : distanceToDrop
+
+    const panelProps = {
+        isActive, displayDistance, displayEta, cfg, status, booking
+    }
 
     return (
         <div className='h-screen w-full bg-zinc-100 flex flex-col lg:flex-row overflow-hidden'>
@@ -83,8 +162,63 @@ const page = () => {
                     pickUpLocation={pickUpPos}
                     dropLoaction={dropPos}
                     mapStatus={MAP_STATUS[booking?.bookingStatus!]}
+                    onStats={({ distanceToPickup, etaToPickUp, distanceToDrop, etaToDrop }) => {
+                        setDistanceToPickup(distanceToPickup)
+                        setEtaToPickUp(etaToPickUp)
+                        setDistanceToDrop(distanceToDrop)
+                        setEtaToDrop(etaToDrop)
+                    }}
                 />
+
+                <motion.div
+                    initial={{ opacity: 0, y: -16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className='absolute top-4 left-1/2 -translate-x-1/2 z-500 pointer-events-none'
+                >
+                    <div className='flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2 
+                    rounded-full shadow-lg border border-zinc-100'>
+                        <span className={`w-2 h-2 rounded-full ${cfg.dot} animate-pulse`} />
+                        <span className='text-xs font-semibold tracking-wide text-zinc-900'>
+                            {cfg.label}
+                        </span>
+                    </div>
+                </motion.div>
             </div>
+
+            <motion.div
+                initial={{ x: 60, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                className='hidden lg:flex w-105 xl:w-115 bg-white border-l border-zinc-100 flex-col overflow-hidden '
+            >
+                <div className='bg-zinc-950 px-6 py-5 shrink-0'>
+                    <p className='text-zinc-500 text-[10px] tracking-[0.2em] uppercase font-semibold mb-1'>
+                        Driver Panel
+                    </p>
+
+                    <div className='flex items-center justify-between'>
+                        <h1 className='text-white text-xl font-bold'>Active Ride</h1>
+                        {isActive && (
+                            <div className='flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full'>
+                                <Zap size={13} className='text-amber-400' />
+                                <span className='text-white text-xs font-semibold'>
+                                    {Math.round(displayEta)} min
+                                </span>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+
+                <div className='flex-1 flex flex-col overflow-hidden'>
+                    <div className='flex-1 overflow-y-auto scrollbar-hide'>
+                        <PanelContent {...panelProps} />
+                    </div>
+                </div>
+
+            </motion.div>
+
         </div>
     )
 }

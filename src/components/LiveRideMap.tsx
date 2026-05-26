@@ -10,7 +10,13 @@ type Props = {
     driverLocation: [Number, Number] | null,
     pickUpLocation: [Number, Number] | null,
     dropLoaction: [Number, Number] | null,
-    mapStatus: "arriving" | "ongoing" | "completed";
+    mapStatus: "arriving" | "ongoing" | "completed",
+    onStats: (data: {
+        distanceToPickup: number,
+        etaToPickUp: number,
+        distanceToDrop: number,
+        etaToDrop: number
+    }) => void
 }
 
 const pickUpIcon = new L.DivIcon({
@@ -182,7 +188,7 @@ const driverIcon = new L.DivIcon({
 });
 
 
-const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus }: Props) => {
+const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus, onStats }: Props) => {
 
     const [routeToPickUp, setRouteToPickUp] = useState<[number, number][]>([]);
     const [routeToDrop, setRouteToDrop] = useState<[number, number][]>([]);
@@ -221,6 +227,14 @@ const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus }
                         setRouteToDrop(dropRoute.geometry.coordinates.map(([lon, lat]: number[]) => [lat, lon]))
 
                     }
+
+                    onStats?.({
+                        distanceToPickup: (pickUpRoute?.distance ?? 0) / 1000,
+                        etaToPickUp: (pickUpRoute?.duration ?? 0) / 60,
+                        distanceToDrop: (dropRoute?.distance ?? 0) / 1000,
+                        etaToDrop: (dropRoute?.duration ?? 0) / 60,
+                    })
+
                 } else {
                     setRouteToPickUp([]);
                     const dropRoute = await getRoute(
@@ -233,6 +247,13 @@ const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus }
                     if (dropRoute) {
                         setRouteToDrop(dropRoute.geometry.coordinates.map(([lon, lat]: number[]) => [lat, lon]))
                     }
+
+                    onStats?.({
+                        distanceToPickup:0,
+                        etaToPickUp: 0,
+                        distanceToDrop: (dropRoute?.distance ?? 0) / 1000,
+                        etaToDrop: (dropRoute?.duration ?? 0) / 60,
+                    })
                 }
 
             } catch (error) {
@@ -242,8 +263,8 @@ const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus }
         }
 
         fetchRoutes();
-        
-    }, [driverLocation,mapStatus]);
+
+    }, [driverLocation, mapStatus]);
 
     const showPickMarker = mapStatus === "arriving"
     const showPickUpRoute = mapStatus === "arriving" && routeToPickUp.length > 0
@@ -289,7 +310,7 @@ const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus }
                     showPickUpRoute && (
                         <Polyline
                             positions={routeToPickUp}
-                            pathOptions={{ color: "#0a0a0a", lineCap: "round", lineJoin: "round" }}
+                            pathOptions={{ color: "#888", lineCap: "round", weight: 4, dashArray: "2 10" }}
 
                         />
                     )
