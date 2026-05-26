@@ -229,7 +229,7 @@ const SearchMap = ({ pickUp, drop, onChange, onDistance }: props) => {
 
         }
     }, [pickUp, drop])
-
+  
     return (
         <div className='relative h-full w-full bg-zinc-100'>
             <MapContainer
