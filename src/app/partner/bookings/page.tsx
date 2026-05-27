@@ -108,6 +108,7 @@ const page = () => {
         return <Truck className="w-4 h-4 text-gray-400" />;
 
       case "loading":
+        return <Truck className="w-4 h-4 text-gray-400" />;
       case "car":
       default:
         return <Car className="w-4 h-4 text-gray-400" />;

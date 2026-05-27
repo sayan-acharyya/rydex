@@ -1,5 +1,5 @@
 'use client'
-import { Clock, IndianRupee, MessageCircle, Phone, User } from 'lucide-react'
+import { Bike, Car, Clock, IndianRupee, MessageCircle, Phone, Truck, User } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { AnimatePresence, motion } from "motion/react"
 import RideChat from './RideChat'
@@ -9,7 +9,25 @@ import { RootState } from '@/redux/store'
 
 const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen, onChatToggle, currentRole }: any) => {
 
-    
+
+    const getVehicleIcon = (vehicleType?: string) => {
+        switch (vehicleType?.toLowerCase()) {
+            case "bike":
+                return <Bike size={18} className=" text-white" />;
+
+            case "auto":
+                return <Car size={18} className=" ttext-white" />; // Replace with Auto icon if available
+
+            case "truck":
+                return <Truck size={18} className=" text-white" />;
+
+            case "loading":
+                return <Truck size={18} className=" text-white" />;
+            case "car":
+            default:
+                return <Car size={18} className=" text-white" />;
+        }
+    };
 
 
 
@@ -137,9 +155,74 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
                 )}
             </AnimatePresence>
 
+            {booking?.vehicle && (
+                <div className='mx-5 lg:mx-6'>
+                    <div className='bg-zinc-50 border border-zinc-100 rounded-2xl p-4 flex items-center gap-3'>
+                        <div className='w-11 h-11 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0'>
+                            {getVehicleIcon(booking.vehicle.type)}
+                        </div>
+                        <div className='flex-1 min-w-0'>
+                            <p className='text-[10px] text-zinc-400 uppercase tracking-wider font-semibold'>
+                                Your Vehicle
+                            </p>
+                            <p className='text-sm font-bold text-zinc-900 truncate'>
+                                {booking.vehicle.vehicleModel ?? "Vehicle"}
+                            </p>
+                        </div>
+                        <div className='shrink-0 bg-zinc-900 px-3 py-1.5 rounded-lg'>
+                            <p className='text-white text-xs font-black tracking-widest font-mono'>{booking.vehicle.number ?? "number"}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="mx-5 lg:mx-6">
+  <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-4">
+    
+    {/* Pickup */}
+    <div className="flex gap-4">
+      <div className="flex flex-col items-center shrink-0 pt-1">
+        <div className="w-3.5 h-3.5 rounded-full bg-black border-2 border-white shadow" />
+        <div className="w-0.5 h-10 bg-zinc-300 mt-1" />
+      </div>
+
+      <div className="flex-1 min-w-0 pb-4">
+        <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">
+          Pick Up
+        </p>
+
+        <p className="mt-1 text-sm text-zinc-800 leading-relaxed break-words">
+          {booking?.pickUpAddress}
+        </p>
+      </div>
+    </div>
+
+    {/* Drop */}
+    <div className="flex gap-4   border-zinc-100 pt-4">
+      <div className="flex flex-col items-center shrink-0 pt-1">
+        <div className="w-3.5 h-3.5 rounded-full bg-black border-2 border-white shadow" />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">
+          Drop  
+        </p>
+
+        <p className="mt-1 text-sm text-zinc-800 leading-relaxed break-words">
+          {booking?.dropAddress}
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
         </div>
     )
 }
 
 export default PanelContent;
+
+
+//6:26:26
 
