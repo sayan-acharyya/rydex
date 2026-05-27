@@ -18,7 +18,7 @@ Generate short, smart, human-like quick reply suggestions based on:
 - RECENT_MESSAGE
 
 Rules:
-- Return exactly 6 suggestions
+- Return exactly 4 suggestions
 - Keep replies short (3–12 words)
 - Match the conversation context and tone
 - Driver replies should sound professional and helpful

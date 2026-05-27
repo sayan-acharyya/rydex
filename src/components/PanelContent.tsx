@@ -7,16 +7,9 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 
 
-const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen, onChatToggle }: any) => {
+const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen, onChatToggle, currentRole }: any) => {
 
-    const { userData } = useSelector((state: RootState) => state.user)
-    let currentRole;
-    useEffect(() => {
-        if (userData) {
-            currentRole = userData?._id === booking.driver._id ? "driver" : "user"
-            console.log(currentRole);
-        }
-    }, [userData?._id])
+    
 
 
 

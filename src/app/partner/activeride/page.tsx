@@ -183,7 +183,8 @@ const page = () => {
     const paymentStatus = PAYMENT_BADGE[booking?.paymentStatus! ?? "pending"]
 
     const panelProps = {
-        isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen, onChatToggle
+        isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen,
+        onChatToggle, currentRole: "driver"
     }
 
     return (

@@ -1,21 +1,28 @@
 import mongoose from "mongoose";
 
-const chatMessageSchema = new mongoose.Schema({
+const chatMessageSchema = new mongoose.Schema(
+  {
     bookingId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Booking",
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
+      required: true,
     },
     sender: {
-        type: String,
-        enum: ["user", "driver"],
-        required: true
+      type: String,
+      enum: ["user", "driver"],
+      required: true,
     },
     text: {
-        type: String,
-        required: true
-    }
-}, { timestamps: true })
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  { timestamps: true }
+);
 
-const ChatMessage = mongoose.model("ChatMessage", chatMessageSchema);
+const ChatMessage =
+  mongoose.models.ChatMessage ||
+  mongoose.model("ChatMessage", chatMessageSchema);
+
 export default ChatMessage;
