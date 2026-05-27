@@ -1,10 +1,84 @@
 'use client'
-import React from 'react'
+import axios from 'axios';
+import { Send } from 'lucide-react';
+import React, { useEffect, useState } from 'react'
+import { motion } from "motion/react"
+import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
+
+type message = {
+    bookingId: string,
+    sender: "user" | "driver",
+    text: string,
+    createdAt: Date
+}
 
 const RideChat = ({ currentRole, bookingId, userName, driverName }: any) => {
 
     const otherName = currentRole == "user" ? driverName : userName;
     const myName = currentRole == "user" ? userName : driverName;
+    const [messages, setMessages] = useState<message[]>([]);
+    const [lastMessage, setLastMessage] = useState("");
+    const [text, setText] = useState("");
+    const [suggestions, setSuggestions] = useState<string[]>([])
+
+    const { userData } = useSelector((state: RootState) => state.user)
+
+
+    const sendMsg = async () => {
+        try {
+            const { data } = await axios.post("/api/chat/send", {
+                sender: currentRole,
+                text,
+                bookingId
+            })
+            console.log(data);
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    const getAllMsgs = async () => {
+        try {
+            const { data } = await axios.post("/api/chat/get-all", {
+                bookingId
+            })
+
+            setMessages(data)
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    const getAISuggestions = async () => {
+        try {
+            const { data } = await axios.post("/api/chat/ai-suggestions", {
+                role: currentRole,
+                lastMessage
+            })
+            setSuggestions(data)
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    useEffect(() => {
+        getAllMsgs()
+    }, [])
+
+    const formatTime = (dateInput: Date | string) => {
+        const date = new Date(dateInput);
+
+        return date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
+
 
     return (
         <div className='flex flex-col h-full min-h-0 bg-white rounded-2xl overflow-hidden border border-zinc-100'>
@@ -24,8 +98,48 @@ const RideChat = ({ currentRole, bookingId, userName, driverName }: any) => {
                         Active Now
                     </p>
                 </div>
-
             </div>
+
+            <div
+                className='flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-zinc-50'
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+                <style>{`div::-webkit-scrollbar {display:none ;}`}</style>
+
+                {messages.length === 0 && (
+                    <div className='flex flex-col items-center justify-center h-full gap-3 py-16'>
+                        <div className='w-12 h-12 rounded-2xl bg-zinc-100 flex items-center justify-center'>
+                            <Send size={18} className='text-zinc-400' />
+                        </div>
+                        <p className='text-sm text-zinc-400 font-medium'>No messages yet</p>
+                        <p className='text-xs text-zinc-300'>Start the conversation below</p>
+                    </div>
+                )}
+
+                {messages.length > 0 && (
+                    messages.map((m, i) => {
+                        const isMine = m.sender.toString() === userData?._id.toString()
+                        return (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                                className={`flex items-end gap-2 ${isMine ? "justify-end" : "justify-start"}`}
+                            >
+                                <div className={`max-w-[72%] px-3.5 py-2.5 text-sm leading-relaxed rounded-2xl shadow-sm
+                                    ${isMine ? "bg-zinc-950 text-white rounded-br-sm " : " bg-white border border-zinc-200 text-zinc-900 rounded-bl-sm"}`}>
+                                    <p className='wrap-break-word'>{m.text}</p>
+                                    <span className='text-[10px]'>
+                                        {formatTime(m.createdAt)}
+                                    </span>
+                                </div>
+                            </motion.div>
+                        )
+                    })
+                )}
+            </div>
+
         </div>
     )
 }
