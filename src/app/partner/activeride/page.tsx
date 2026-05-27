@@ -1,6 +1,6 @@
 'use client'
 import LiveRideMap from '@/components/LiveRideMap';
-import { BookingStatus, IBooking } from '@/models/booking.model';
+import { BookingStatus, IBooking, PaymentStatus } from '@/models/booking.model';
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { motion } from "motion/react"
@@ -86,6 +86,31 @@ const STATUS_LABEL: Record<
     },
 };
 
+const PAYMENT_BADGE: Record<
+    PaymentStatus,
+    { label: string; cls: string }
+> = {
+    pending: {
+        label: "Pending",
+        cls: "bg-amber-100 text-amber-700",
+    },
+
+    paid: {
+        label: "Paid",
+        cls: "bg-emerald-100 text-emerald-700",
+    },
+
+    cash: {
+        label: "Cash",
+        cls: "bg-zinc-100 text-zinc-700",
+    },
+
+    failed: {
+        label: "Failed",
+        cls: "bg-red-100 text-red-700",
+    },
+};
+
 const page = () => {
 
     const [booking, setBooking] = useState<IBooking | null>(null);
@@ -97,7 +122,8 @@ const page = () => {
     const [distanceToDrop, setDistanceToDrop] = useState(0);
     const [etaToPickUp, setEtaToPickUp] = useState(0);
     const [etaToDrop, setEtaToDrop] = useState(0);
-    const [status, setStatus] = useState("")
+    const [status, setStatus] = useState("");
+    const [chatOpen, setChatOpen] = useState(false);
 
 
     useEffect(() => {
@@ -118,6 +144,10 @@ const page = () => {
         }
         fetch()
     }, []);
+
+    const onChatToggle = () => {
+        setChatOpen(prev => !prev)
+    }
 
     useEffect(() => {
         if (!navigator.geolocation) return;
@@ -147,11 +177,13 @@ const page = () => {
 
     const cfg = STATUS_LABEL[booking?.bookingStatus! ?? "confirmed"]
     const isActive = ["confirmed", "started"].includes(status)
+    const canChat = booking?.bookingStatus === "confirmed"
     const displayEta = status === "confirmed" ? etaToPickUp : etaToDrop
     const displayDistance = status === "confirmed" ? distanceToPickup : distanceToDrop
+    const paymentStatus = PAYMENT_BADGE[booking?.paymentStatus! ?? "pending"]
 
     const panelProps = {
-        isActive, displayDistance, displayEta, cfg, status, booking
+        isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen, onChatToggle
     }
 
     return (
@@ -212,7 +244,7 @@ const page = () => {
                 </div>
 
                 <div className='flex-1 flex flex-col overflow-hidden'>
-                    <div className='flex-1 overflow-y-auto scrollbar-hide'>
+                    <div className='flex-1 overflow-y-auto  no-scrollbar'>
                         <PanelContent {...panelProps} />
                     </div>
                 </div>

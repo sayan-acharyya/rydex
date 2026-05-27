@@ -194,7 +194,14 @@ const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus, 
     const [routeToDrop, setRouteToDrop] = useState<[number, number][]>([]);
 
     useEffect(() => {
-        if (!driverLocation) return;
+        if (
+            !driverLocation ||
+            !pickUpLocation ||
+            !dropLoaction
+        ) {
+            return;
+        }
+
         const [pLat, pLon] = pickUpLocation as [number, number]
         const [dLat, dLon] = dropLoaction as [number, number]
         const [drLat, drLon] = driverLocation as [number, number]
@@ -249,7 +256,7 @@ const LiveRideMap = ({ driverLocation, pickUpLocation, dropLoaction, mapStatus, 
                     }
 
                     onStats?.({
-                        distanceToPickup:0,
+                        distanceToPickup: 0,
                         etaToPickUp: 0,
                         distanceToDrop: (dropRoute?.distance ?? 0) / 1000,
                         etaToDrop: (dropRoute?.duration ?? 0) / 60,

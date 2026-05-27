@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
         const booking = await Booking.findOne({
             driver: user?._id,
             bookingStatus: { $in: ["confirmed", "started", "completed"] }
-        })
+        }).populate("user vehicle driver")
 
         return Response.json(booking, { status: 200 });
 

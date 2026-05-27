@@ -1,7 +1,25 @@
-import { Clock, IndianRupee } from 'lucide-react'
-import React from 'react'
+'use client'
+import { Clock, IndianRupee, MessageCircle, Phone, User } from 'lucide-react'
+import React, { useEffect } from 'react'
+import { AnimatePresence, motion } from "motion/react"
+import RideChat from './RideChat'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 
-const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, booking }: any) => {
+
+const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen, onChatToggle }: any) => {
+
+    const { userData } = useSelector((state: RootState) => state.user)
+    let currentRole;
+    useEffect(() => {
+        if (userData) {
+            currentRole = userData?._id === booking.driver._id ? "driver" : "user"
+            console.log(currentRole);
+        }
+    }, [userData?._id])
+
+
+
     return (
         <div className='flex flex-col pt-5 pb-4 gap-3'>
             {isActive && (
@@ -34,10 +52,101 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
                     </div>
                 </div>
             )}
+
+            {booking?.user && (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className='mx-5 lg:mx-6'
+                >
+                    <div className='bg-zinc-950 rounded-2xl p-4 flex items-center gap-4'>
+                        <div className='relative  shrink-0'>
+                            <div className='w-14 h-14 rounded-xl bg-zinc-800 flex items-center justify-center'>
+                                <User size={26} className='text-zinc-300' />
+                            </div>
+                            <div className='absolute -bottom-1 -right-1 bg-emerald-400 w-4 h-4 
+                          rounded-full border-2 border-zinc-950'/>
+                        </div>
+                        <div className='flex-1 min-w-0'>
+                            <div className='flex items-center justify-between gap-2'>
+                                <p className='text-white font-bold text-base truncate'>
+                                    {booking.user.name || "Customer"}
+                                </p>
+                                <div className='flex items-center gap-1 bg-white/10 px-2 py-1
+                                rounded-full shrink-0'>
+                                    <IndianRupee size={10} className='text-amber-400' />
+                                    <span className='text-white text-xs font-semibold'>
+                                        {booking.fare}
+                                    </span>
+                                </div>
+                            </div>
+                            {booking.paymentStatus && (
+                                <div className='flex items-center gap-2 mt-1.5'>
+                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold
+                                        ${paymentStatus.cls ?? "bg-zinc-700 text-zinc-300 "}`}>
+                                        {paymentStatus.label}
+                                    </span>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+
+                    {isActive && (
+                        <div className='flex gap-2 mt-2 mx-1'>
+                            {booking.userMobileNumber && (
+                                <a
+                                    className={`flex items-center justify-center gap-2 bg-zinc-100
+                            hover:bg-zinc-200 active:scale-[0.97] transition-all text-zinc-900 py-3
+                            rounded-xl text-sm font-semibold ${canChat ? "flex-1" : "w-full"}`}
+                                    href={`tel:${booking.userMobileNumber}`}>
+                                    <Phone size={15} /> Call
+                                </a>
+                            )}
+                            {canChat && (
+                                <button
+                                    onClick={onChatToggle}
+                                    className={`flex-1 flex items-center justify-center gap-2
+                        active:scale-[0.97] transition-all py-3 rounded-xl text-sm font-semibold 
+                        ${chatOpen ? "bg-zinc-200 text-zinc-900 " : "bg-zinc-900 hover:bg-zinc-800 text-white"}`}>
+                                    <MessageCircle size={15} />
+                                    {chatOpen ? "Close Chat" : "Message"}
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+
+                </motion.div>
+            )}
+
+            <AnimatePresence>
+                {chatOpen && canChat && (
+                    <motion.div
+                        key="chat"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className='mx-5 lg:mx-6 overflow-hidden'
+                    >
+                        <div className='rounded-2xl overflow-hidden border border-zinc-100 h-115 '>
+
+                            <RideChat
+                                currentRole={currentRole}
+                                bookingId={booking._id}
+                                userName={booking?.user?.name || "Customer"}
+                                driverName={booking?.driver?.name || "Driver"}
+                            />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </div>
     )
 }
 
 export default PanelContent;
 
-//4:32:00
