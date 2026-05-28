@@ -8,6 +8,7 @@ import { ArrowRight, ChevronUp, KeyRound, MapPin, Navigation, Zap } from 'lucide
 import PanelContent from '@/components/PanelContent';
 import { getSocket } from '@/lib/socket';
 import toast from 'react-hot-toast';
+import CompletedScreen from '@/components/CompletedScreen';
 
 const MAP_STATUS: Record<
     BookingStatus,
@@ -292,6 +293,12 @@ const page = () => {
                 </div>
             </div>
         );
+    }
+
+    if (status === "completed" && booking) {
+        return (
+            <CompletedScreen booking={booking} role='driver'/>
+        )
     }
 
     const cfg = STATUS_LABEL[booking?.bookingStatus! ?? "confirmed"]

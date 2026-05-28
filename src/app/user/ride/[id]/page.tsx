@@ -8,6 +8,7 @@ import { ChevronUp, Zap } from 'lucide-react';
 import PanelContent from '@/components/PanelContent';
 import { useParams } from 'next/navigation';
 import { getSocket } from '@/lib/socket';
+import CompletedScreen from '@/components/CompletedScreen';
 
 const MAP_STATUS: Record<
     BookingStatus,
@@ -176,6 +177,12 @@ const page = () => {
                 </div>
             </div>
         );
+    }
+
+    if (status === "completed" && booking) {
+        return (
+            <CompletedScreen booking={booking} role='user' />
+        )
     }
 
     const cfg = STATUS_LABEL[booking?.bookingStatus! ?? "confirmed"]
