@@ -13,6 +13,7 @@ import { RootState } from '@/redux/store';
 
 
 interface IBooking {
+    _id:string;
     user: IUser;
     driver: IUser;
     vehicle: IVehicle;
@@ -332,10 +333,10 @@ const page = () => {
                                                         </span>
                                                     </div>
                                                     {
-                                                        b.bookingStatus !== "completed" && (
+                                                        (b.bookingStatus !== "completed" && (b.bookingStatus == "confirmed" || b.bookingStatus == "started")) && (
                                                             <div className='flex items-center gap-2'>
                                                                 <button
-                                                                    onClick={() => router.push(`/user/active-ride`)}
+                                                                    onClick={() => router.push(`/user/ride/${b._id}`)}
                                                                     className='flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700
                               bg-blue-50 hover:bg-blue-100 px-4 py-1.5 rounded-lg transition-colors'>
                                                                     <span>Details</span>

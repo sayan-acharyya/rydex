@@ -29,6 +29,10 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
         }
     };
 
+    const callNumber =
+        currentRole === "driver"
+            ? booking?.userMobileNumber
+            : booking?.driverMobileNumber;
 
 
     return (
@@ -82,7 +86,19 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
                         <div className='flex-1 min-w-0'>
                             <div className='flex items-center justify-between gap-2'>
                                 <p className='text-white font-bold text-base truncate'>
-                                    {booking.user.name || "Customer"}
+                                    {currentRole === "driver" ? (
+                                        <>
+                                            <span className='text-zinc-400'>Booked By</span>
+                                            <span className='mx-2 text-zinc-500'>•</span>
+                                            {booking?.user?.name || "Customer"}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className='text-zinc-400'>Driver</span>
+                                            <span className='mx-2 text-zinc-500'>•</span>
+                                            {booking?.driver?.name || "Driver"}
+                                        </>
+                                    )}
                                 </p>
                                 <div className='flex items-center gap-1 bg-white/10 px-2 py-1
                                 rounded-full shrink-0'>
@@ -106,13 +122,15 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
 
                     {isActive && (
                         <div className='flex gap-2 mt-2 mx-1'>
-                            {booking.userMobileNumber && (
+                            {callNumber && (
                                 <a
+                                    href={`tel:${callNumber}`}
                                     className={`flex items-center justify-center gap-2 bg-zinc-100
-                            hover:bg-zinc-200 active:scale-[0.97] transition-all text-zinc-900 py-3
-                            rounded-xl text-sm font-semibold ${canChat ? "flex-1" : "w-full"}`}
-                                    href={`tel:${booking.userMobileNumber}`}>
-                                    <Phone size={15} /> Call
+        hover:bg-zinc-200 active:scale-[0.97] transition-all text-zinc-900 py-3
+        rounded-xl text-sm font-semibold ${canChat ? "flex-1" : "w-full"}`}
+                                >
+                                    <Phone size={15} />
+                                    Call
                                 </a>
                             )}
                             {canChat && (
@@ -163,7 +181,7 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
                         </div>
                         <div className='flex-1 min-w-0'>
                             <p className='text-[10px] text-zinc-400 uppercase tracking-wider font-semibold'>
-                                Your Vehicle
+                                {currentRole === "driver" ? "Your Vehicle" : "Assigned Vehicle"}
                             </p>
                             <p className='text-sm font-bold text-zinc-900 truncate'>
                                 {booking.vehicle.vehicleModel ?? "Vehicle"}
@@ -177,45 +195,45 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
             )}
 
             <div className="mx-5 lg:mx-6">
-  <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-4">
-    
-    {/* Pickup */}
-    <div className="flex gap-4">
-      <div className="flex flex-col items-center shrink-0 pt-1">
-        <div className="w-3.5 h-3.5 rounded-full bg-black border-2 border-white shadow" />
-        <div className="w-0.5 h-10 bg-zinc-300 mt-1" />
-      </div>
+                <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden p-4">
 
-      <div className="flex-1 min-w-0 pb-4">
-        <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">
-          Pick Up
-        </p>
+                    {/* Pickup */}
+                    <div className="flex gap-4">
+                        <div className="flex flex-col items-center shrink-0 pt-1">
+                            <div className="w-3.5 h-3.5 rounded-full bg-black border-2 border-white shadow" />
+                            <div className="w-0.5 h-10 bg-zinc-300 mt-1" />
+                        </div>
 
-        <p className="mt-1 text-sm text-zinc-800 leading-relaxed break-words">
-          {booking?.pickUpAddress}
-        </p>
-      </div>
-    </div>
+                        <div className="flex-1 min-w-0 pb-4">
+                            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">
+                                Pick Up
+                            </p>
 
-    {/* Drop */}
-    <div className="flex gap-4   border-zinc-100 pt-4">
-      <div className="flex flex-col items-center shrink-0 pt-1">
-        <div className="w-3.5 h-3.5 rounded-full bg-black border-2 border-white shadow" />
-      </div>
+                            <p className="mt-1 text-sm text-zinc-800 leading-relaxed break-words">
+                                {booking?.pickUpAddress}
+                            </p>
+                        </div>
+                    </div>
 
-      <div className="flex-1 min-w-0">
-        <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">
-          Drop  
-        </p>
+                    {/* Drop */}
+                    <div className="flex gap-4   border-zinc-100 pt-4">
+                        <div className="flex flex-col items-center shrink-0 pt-1">
+                            <div className="w-3.5 h-3.5 rounded-full bg-black border-2 border-white shadow" />
+                        </div>
 
-        <p className="mt-1 text-sm text-zinc-800 leading-relaxed break-words">
-          {booking?.dropAddress}
-        </p>
-      </div>
-    </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">
+                                Drop
+                            </p>
 
-  </div>
-</div>
+                            <p className="mt-1 text-sm text-zinc-800 leading-relaxed break-words">
+                                {booking?.dropAddress}
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
 
         </div>
     )
@@ -224,5 +242,5 @@ const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, book
 export default PanelContent;
 
 
-//6:26:26
+
 
