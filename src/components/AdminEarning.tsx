@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from "motion/react"
 
 type Earning = {
-  date: string,
+  data: string,
   earnings: number
 }
 const AdminEarning = () => {
@@ -48,39 +48,42 @@ const AdminEarning = () => {
     return "₹" + n.toLocaleString()
   }
 
-  function AdminEarning() {
-    const metrics = [
-      {
-        label: "Best Day",
-        value: fmt(max),
-        sub: bestDay?.date ?? "-",
-        icon: <Star size={14} />,
-        color: "text-violet-600",
-        bg: "bg-violet-50",
-      },
-      {
-        label: "Daily Avg",
-        value: fmt(avg),
-        sub: "per day",
-        icon: <BarChart2 size={14} />,
-        color: "text-blue-600",
-        bg: "bg-blue-50",
-      },
-      {
-        label: "Today",
-        value: today ? fmt(today.earnings) : "-",
-        sub:
-          today && yesterDay
-            ? `${deltaPositive ? "+" : ""}${fmt(delta)} vs yesterday`
-            : "-",
-        icon: <Zap size={14} />,
-        color: "text-emerald-600",
-        bg: "bg-emerald-50",
-      },
-    ];
 
 
-  }
+
+
+  const metrics = [
+    {
+      label: "Best Day",
+      value: fmt(max),
+      sub: bestDay?.data ?? "-",
+      icon: <Star size={14} />,
+      color: "text-violet-600",
+      bg: "bg-violet-50",
+    },
+    {
+      label: "Daily Avg",
+      value: fmt(avg),
+      sub: "per day",
+      icon: <BarChart2 size={14} />,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+    },
+    {
+      label: "Today",
+      value: today ? fmt(today.earnings) : "-",
+      sub:
+        today && yesterDay
+          ? `${deltaPositive ? "+" : ""}${fmt(delta)} vs yesterday`
+          : "-",
+      icon: <Zap size={14} />,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+    },
+  ];
+
+
+
 
   return (
     <div className='bg-white  rounded-3xl border border-gray-100 shadow-sm p-6 w-full'>
@@ -132,12 +135,34 @@ const AdminEarning = () => {
         </div>
       </div>
 
-<div>
-  
-</div>
+      <div className='grid grid-cols-3 gap-3 mb-6'>
+        {metrics.map((m, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.07, duration: 0.4 }}
+            className='bg-gray-50 rounded-2xl p-4'
+          >
+            <div className={`flex items-center gap-1.5 text-[11px] font-semibold 
+              uppercase tracking-wider mb-2 ${m.color}`}>
+              <span className={`${m.bg} p-1 rounded-lg ${m.color}`}>
+                {m.icon}
+              </span>
+              {m.label}
+            </div>
+            <p className='text-lg font-bold text-gray-900 font-mono leading-none'>
+              {m.value}
+            </p>
+            <p className='text-[11px] text-gray-400 mt-1'>{m.sub}</p>
+          </motion.div>
+        ))}
+      </div>
 
     </div>
   )
 }
 
-export default AdminEarning
+export default AdminEarning;
+
+//9:24:50
