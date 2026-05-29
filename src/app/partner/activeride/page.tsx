@@ -4,11 +4,12 @@ import { BookingStatus, IBooking, PaymentStatus } from '@/models/booking.model';
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from "motion/react"
-import { ArrowRight, ChevronUp, KeyRound, MapPin, Navigation, Zap } from 'lucide-react';
+import { ArrowRight, Car, ChevronUp, KeyRound, MapPin, Navigation, Radio, Zap } from 'lucide-react';
 import PanelContent from '@/components/PanelContent';
 import { getSocket } from '@/lib/socket';
 import toast from 'react-hot-toast';
 import CompletedScreen from '@/components/CompletedScreen';
+import Link from 'next/link';
 
 const MAP_STATUS: Record<
     BookingStatus,
@@ -226,6 +227,11 @@ const page = () => {
             try {
                 const { data } = await axios.get("/api/partner/my-active")
 
+                if (!data) {
+                    setLoading(false)
+                    setBooking(null);
+                    return;
+                }
                 setBooking(data);
                 setStatus(data.bookingStatus)
                 setPickUpPos([data.pickUpLocation.coordinates[1], data.pickUpLocation.coordinates[0]]);
@@ -295,9 +301,46 @@ const page = () => {
         );
     }
 
+    if (booking == null) {
+        return (
+        <div className="min-h-screen bg-black flex items-center justify-center px-6">
+            <div className="max-w-md w-full text-center">
+
+                <div className="mx-auto w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center mb-6">
+                    <Radio size={36} className="text-white" />
+                </div>
+
+                <h1 className="text-3xl font-bold text-white mb-3">
+                    No Active Ride
+                </h1>
+
+                <p className="text-zinc-400 text-sm leading-relaxed mb-8">
+                    You are currently not assigned to any ride.
+                    Stay online and you'll receive ride requests when passengers book nearby.
+                </p>
+
+                 
+                <div className="flex flex-col gap-3">
+                    
+
+                    <Link
+                        href="/"
+                        className="flex items-center justify-center gap-2 border border-zinc-700 text-white font-semibold py-3 px-4 rounded-2xl hover:bg-zinc-900 transition-all"
+                    >
+                        Back to Home
+                        <ArrowRight size={16} />
+                    </Link>
+                </div>
+
+            </div>
+        </div>
+
+        )
+    }
+
     if (status === "completed" && booking) {
         return (
-            <CompletedScreen booking={booking} role='driver'/>
+            <CompletedScreen booking={booking} role='driver' />
         )
     }
 

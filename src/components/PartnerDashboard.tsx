@@ -289,7 +289,9 @@ const PartnerDashboard = () => {
                                 <div className='mt-8 flex flex-col sm:flex-row gap-4'>
 
                                     {/* Primary */}
-                                    <button className='bg-white text-black px-6 py-3 rounded-xl font-semibold 
+                                    <button 
+                                    onClick={()=>router.push("/partner/bookings")}
+                                    className='bg-white text-black px-6 py-3 rounded-xl font-semibold 
                     flex items-center justify-center gap-2 hover:scale-[1.02] transition'>
                                         Go to Bookings
                                         <ArrowRight size={16} />
@@ -452,6 +454,7 @@ const PartnerDashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
 
         </div>
     )

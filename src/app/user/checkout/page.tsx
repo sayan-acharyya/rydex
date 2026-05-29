@@ -226,7 +226,7 @@ const page = () => {
                 setLoading(false);
                 if (data.success) {
                     setStatus("confirmed");
-                    window.location.href = `/ride/${booking._id}`
+                    window.location.href = `/user/ride/${booking._id}`
 
                 }
             }
@@ -673,7 +673,7 @@ const page = () => {
                                             transition={{ delay: 0.5 }}
                                             whileTap={{ scale: 0.97 }}
                                             whileHover={{ scale: 1.03 }}
-                                            onClick={() => { window.location.href = `/ride/${booking._id}` }}
+                                            onClick={() => { window.location.href = `/user/ride/${booking._id}` }}
                                             className='flex items-center gap-2.5 bg-zinc-900 hover:bg-black text-white 
                                         font-black text-sm px-8 py-4 rounded-2xl transition-colors shadow-md'
                                         >

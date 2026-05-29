@@ -23,6 +23,7 @@ import Kpi from './Kpi'
 import TabButton from './TabButton'
 import { AnimatePresence, motion } from 'motion/react'
 import ContentList from './ContentList'
+import AdminEarning from './AdminEarning'
 
 type Stats = {
   totalApprovedPartners: number
@@ -69,7 +70,7 @@ const AdminDashboard = () => {
   const handleGetPendingKYC = async () => {
     try {
       const { data } = await axios.get("/api/admin/video-kyc/pending")
-  
+
       setPendingKyc(data)
     } catch (error) {
       console.log(error)
@@ -210,9 +211,12 @@ const AdminDashboard = () => {
         </AnimatePresence>
 
       </main>
+
+      {/* admin Earningg component */}
+      <AdminEarning />
+
     </div>
   )
 }
 
 export default AdminDashboard;
- 

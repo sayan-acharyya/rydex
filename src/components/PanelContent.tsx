@@ -9,7 +9,7 @@ import { RootState } from '@/redux/store'
 
 const PanelContent = ({ isActive, displayDistance, displayEta, cfg, status, booking, paymentStatus, canChat, chatOpen, onChatToggle, currentRole }: any) => {
 
-
+  
     const getVehicleIcon = (vehicleType?: string) => {
         switch (vehicleType?.toLowerCase()) {
             case "bike":
