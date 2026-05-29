@@ -210,10 +210,11 @@ const AdminDashboard = () => {
           </motion.div>
         </AnimatePresence>
 
+        {/* admin Earningg component */}
+        <AdminEarning />
+
       </main>
 
-      {/* admin Earningg component */}
-      <AdminEarning />
 
     </div>
   )
