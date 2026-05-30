@@ -6,6 +6,7 @@ import {
   ClockAlert,
   Crown,
   LogOut,
+  MessageSquare,
   Truck,
   Users,
   Video,
@@ -107,28 +108,49 @@ const AdminDashboard = () => {
             className="w-20 sm:w-28 h-auto"
           />
 
-          {/* Desktop */}
-          <div className='hidden sm:flex items-center gap-4'>
+          {/* Desktop Navigation */}
+          <div className='hidden sm:flex items-center gap-3'>
+
             <div className='flex items-center gap-2 text-[10px] font-bold uppercase px-3 py-1.5 rounded-full bg-zinc-900 text-white'>
               <Crown size={14} className="text-yellow-500" />
               Admin Panel
             </div>
 
             <button
+              onClick={() => router.push("/admin/messages")}
+              className='flex items-center gap-2 text-sm px-5 py-2 rounded-full bg-white border border-gray-300 hover:bg-zinc-900 hover:text-white transition-all duration-200'
+            >
+              <MessageSquare size={16} />
+              Messages
+            </button>
+
+            <button
               onClick={handleLogOut}
-              className='group flex items-center gap-2 text-sm px-5 py-2 rounded-full bg-white border  border-gray-300 hover:bg-zinc-900 hover:text-white transition'
+              className='group flex items-center gap-2 text-sm px-5 py-2 rounded-full bg-white border border-gray-300 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200'
             >
               Logout
               <LogOut size={16} />
             </button>
+
           </div>
 
-          {/* Mobile */}
-          <div className='flex sm:hidden items-center gap-2'>
-            <Crown size={16} />
-            <button onClick={handleLogOut}>
-              <LogOut size={16} />
+          {/* Mobile Navigation */}
+          <div className='flex sm:hidden items-center gap-3'>
+
+            <button
+              onClick={() => router.push("/admin/messages")}
+              className='p-2 rounded-full border border-gray-300 bg-white'
+            >
+              <MessageSquare size={18} />
             </button>
+
+            <button
+              onClick={handleLogOut}
+              className='p-2 rounded-full border border-gray-300 bg-white'
+            >
+              <LogOut size={18} />
+            </button>
+
           </div>
 
         </div>
@@ -144,6 +166,7 @@ const AdminDashboard = () => {
           <Kpi label="Pending Partners" value={stats?.totalPendingPartners} icon={ClockAlert} varient="pending" />
           <Kpi label="Rejected Partners" value={stats?.totalRejectedPartners} icon={XCircle} varient="rejected" />
         </div>
+
 
         {/* Tabs */}
         <div className='bg-white rounded-2xl p-2 shadow-lg   flex flex-wrap gap-2'>
