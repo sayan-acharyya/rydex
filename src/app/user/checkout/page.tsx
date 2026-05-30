@@ -212,7 +212,7 @@ const page = () => {
                         setLoading(false);
                         if (data.success) {
                             setStatus("confirmed");
-                            window.location.href = `/ride/${booking._id}`
+                            window.location.href = `/user/ride/${booking._id}`
                         }
                     }
                 }

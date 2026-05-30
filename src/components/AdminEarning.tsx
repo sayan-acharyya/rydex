@@ -3,7 +3,18 @@
 import axios from 'axios';
 import { BarChart2, Star, TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { motion } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell,
+  LabelList,
+} from "recharts";
 
 type Earning = {
   data: string,
@@ -159,10 +170,61 @@ const AdminEarning = () => {
         ))}
       </div>
 
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, scaleY: 0.92 }}
+          animate={{ opacity: 1, scaleY: 1 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className='h-56'
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={earningData}
+              barCategoryGap={"30%"}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke='#f0f0f0' vertical={false} />
+              <XAxis
+                dataKey="data"
+                tick={{ fontSize: 11, fill: "#9ca3af", fontWeight: 500 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "#9ca3af" }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(v) => "₹" + (v >= 1000 ? (v / 1000).toFixed(0) + "k" : v)}
+              />
+              <Bar
+                dataKey='earnings' radius={[8, 8, 3, 3]}
+              >
+                {earningData?.map((d, i) => {
+                  const isToday = i === earningData.length - 1;
+                  const isBest = d.earnings === max && !isToday;
+                  return (
+                    <Cell
+                      key={`cell - ${i}`}
+                      fill={
+                        isToday ? "#10b981" : isBest ? "#8b5cf6" : "#bfdbfe"
+                      }
+
+                    />
+                  )
+                })}
+                <LabelList
+                  dataKey="earnings"
+                  position="top"
+                  formatter={(value) => `₹${Number(value).toFixed(2)}`}
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </AnimatePresence>
+
     </div>
   )
 }
 
 export default AdminEarning;
 
-//9:24:50

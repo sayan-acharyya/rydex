@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import connectDb from "@/lib/db";
 import Booking from "@/models/booking.model";
 import { data, object } from "motion/react-client";
@@ -7,11 +8,19 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
     try {
         await connectDb();
+        const session = await auth();
+          if (!session?.user?.id) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
 
         const sevenDaysAgo = new Date()
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
         const bookings = await Booking.find({
+             driver: session.user.id,
             paymentStatus: "paid",
             createdAt: { $gt: sevenDaysAgo }
         }).select("partnerAmount createdAt")

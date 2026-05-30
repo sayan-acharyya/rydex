@@ -13,6 +13,7 @@ import axios from 'axios';
 import PricingModal from './PricingModal';
 import { IVehicle, vehicleType } from '@/models/vehicle.model';
 import { IUser } from '@/models/user.model';
+import PartnerEarning from './PartnerEarning';
 
 
 type Step = {
@@ -289,9 +290,9 @@ const PartnerDashboard = () => {
                                 <div className='mt-8 flex flex-col sm:flex-row gap-4'>
 
                                     {/* Primary */}
-                                    <button 
-                                    onClick={()=>router.push("/partner/bookings")}
-                                    className='bg-white text-black px-6 py-3 rounded-xl font-semibold 
+                                    <button
+                                        onClick={() => router.push("/partner/bookings")}
+                                        className='bg-white text-black px-6 py-3 rounded-xl font-semibold 
                     flex items-center justify-center gap-2 hover:scale-[1.02] transition'>
                                         Go to Bookings
                                         <ArrowRight size={16} />
@@ -311,6 +312,8 @@ const PartnerDashboard = () => {
                         </motion.div>
                     )
                 }
+
+                  <PartnerEarning/>
             </div>
 
             <PricingModal
@@ -455,7 +458,7 @@ const PartnerDashboard = () => {
                 )}
             </AnimatePresence>
 
-
+          
         </div>
     )
 }
