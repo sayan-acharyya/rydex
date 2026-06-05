@@ -7,6 +7,7 @@ import Provider from "@/lib/Provider";
 import ReduxProvider from "@/redux/ReduxProvider";
 import InitUser from "@/InitUser"
 import 'leaflet/dist/leaflet.css';
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -79,6 +80,12 @@ export default function RootLayout({
             },
           }}
         />
+
+       <script 
+   src="http://localhost:3000/chatBot.js"
+   data-owner-id = "usr_128171791054013555"
+   ></script> 
+
       </body>
     </html>
   );
