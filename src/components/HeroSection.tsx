@@ -6,7 +6,7 @@ import { Bike, Bus, Car, Truck } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation'
- 
+
 
 const HeroSection = ({ onAuthRequired }: { onAuthRequired: () => void }) => {
 
@@ -73,29 +73,96 @@ const HeroSection = ({ onAuthRequired }: { onAuthRequired: () => void }) => {
                 </motion.div>
 
                 {/* Button */}
-                {
-                    !userData ? (
+                <div className="mt-10 flex flex-wrap items-center gap-5">
+                    {!userData ? (
                         <motion.button
                             onClick={onAuthRequired}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className='mt-10 px-10 py-4 bg-white text-black
-                    rounded-full font-semibold shadow-xl'
+                            className="
+      inline-flex
+      items-center
+      justify-center
+      h-14
+      px-10
+      rounded-full
+      border
+      border-white/40
+      bg-white/10
+      backdrop-blur-md
+      text-white
+      font-semibold
+      shadow-xl
+      transition-all
+      duration-300
+      hover:bg-white/20
+      hover:border-white/70
+    "
+                            //className="inline-flex items-center justify-center h-14 px-10 bg-white text-black rounded-full font-semibold shadow-xl"
                         >
-                            Book Now
+                          🚗  Book a Ride
                         </motion.button>
                     ) : (
                         <motion.button
-                            onClick={() => router.push('/user/book')}
+                            onClick={() => router.push("/user/book")}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className='mt-10 px-10 py-4 bg-white text-black
-                    rounded-full font-semibold shadow-xl'
+                            className="
+      inline-flex
+      items-center
+      justify-center
+      h-14
+      px-10
+      rounded-full
+      border
+      border-white/40
+      bg-white/10
+      backdrop-blur-md
+      text-white
+      font-semibold
+      shadow-xl
+      transition-all
+      duration-300
+      hover:bg-white/20
+      hover:border-white/70
+    "
+                            //className="inline-flex items-center justify-center h-14 px-10 bg-white text-black rounded-full font-semibold shadow-xl"
                         >
-                            Book Now
+                           🚗 Book a Ride 
                         </motion.button>
-                    )
-                }
+                    )}
+
+                    <motion.a
+                    
+                        href="https://www.linkedin.com/in/sayan-acharyya-228287319/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="
+      inline-flex
+      items-center
+      justify-center
+      h-14
+      px-10
+      rounded-full
+      border
+      border-white/40
+      bg-white/10
+      backdrop-blur-md
+      text-white
+      font-semibold
+      shadow-xl
+      transition-all
+      duration-300
+      hover:bg-white/20
+      hover:border-white/70
+    "
+                    >
+                        📦&nbsp;Send Courier
+                    </motion.a>
+                </div>
+
             </div>
         </div>
     )
