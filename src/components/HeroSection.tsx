@@ -73,78 +73,84 @@ const HeroSection = ({ onAuthRequired }: { onAuthRequired: () => void }) => {
                 </motion.div>
 
                 {/* Button */}
-                <div className="mt-10 flex flex-wrap items-center gap-5">
-                    {!userData ? (
-                        <motion.button
-                            onClick={onAuthRequired}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="
-      inline-flex
-      items-center
-      justify-center
-      h-14
-      px-10
-      rounded-full
-      border
-      border-white/40
-      bg-white/10
-      backdrop-blur-md
-      text-white
-      font-semibold
-      shadow-xl
-      transition-all
-      duration-300
-      hover:bg-white/20
-      hover:border-white/70
-    "
-                            //className="inline-flex items-center justify-center h-14 px-10 bg-white text-black rounded-full font-semibold shadow-xl"
-                        >
-                          🚗  Book a Ride
-                        </motion.button>
-                    ) : (
-                        <motion.button
-                            onClick={() => router.push("/user/book")}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="
-      inline-flex
-      items-center
-      justify-center
-      h-14
-      px-10
-      rounded-full
-      border
-      border-white/40
-      bg-white/10
-      backdrop-blur-md
-      text-white
-      font-semibold
-      shadow-xl
-      transition-all
-      duration-300
-      hover:bg-white/20
-      hover:border-white/70
-    "
-                            //className="inline-flex items-center justify-center h-14 px-10 bg-white text-black rounded-full font-semibold shadow-xl"
-                        >
-                           🚗 Book a Ride 
-                        </motion.button>
-                    )}
+                 <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-5 w-full sm:w-auto">
+  {!userData ? (
+    <motion.button
+      onClick={onAuthRequired}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="
+        inline-flex
+        items-center
+        justify-center
+        w-full
+        sm:w-auto
+        h-14
+        px-8
+        sm:px-10
+        rounded-full
+        border
+        border-white/40
+        bg-white/10
+        backdrop-blur-md
+        text-white
+        font-semibold
+        shadow-xl
+        transition-all
+        duration-300
+        hover:bg-white/20
+        hover:border-white/70
+      "
+    >
+      🚗 Book a Ride
+    </motion.button>
+  ) : (
+    <motion.button
+      onClick={() => router.push("/user/book")}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="
+        inline-flex
+        items-center
+        justify-center
+        w-full
+        sm:w-auto
+        h-14
+        px-8
+        sm:px-10
+        rounded-full
+        border
+        border-white/40
+        bg-white/10
+        backdrop-blur-md
+        text-white
+        font-semibold
+        shadow-xl
+        transition-all
+        duration-300
+        hover:bg-white/20
+        hover:border-white/70
+      "
+    >
+      🚗 Book a Ride
+    </motion.button>
+  )}
 
-                    <motion.a
-                    
-                        href="https://www.linkedin.com/in/sayan-acharyya-228287319/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="
+  <motion.a
+    href="https://www.linkedin.com/in/sayan-acharyya-228287319/"
+    target="_blank"
+    rel="noopener noreferrer"
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="
       inline-flex
       items-center
       justify-center
+      w-full
+      sm:w-auto
       h-14
-      px-10
+      px-8
+      sm:px-10
       rounded-full
       border
       border-white/40
@@ -158,10 +164,10 @@ const HeroSection = ({ onAuthRequired }: { onAuthRequired: () => void }) => {
       hover:bg-white/20
       hover:border-white/70
     "
-                    >
-                        📦&nbsp;Send Courier
-                    </motion.a>
-                </div>
+  >
+    📦&nbsp;Send Courier
+  </motion.a>
+</div>
 
             </div>
         </div>
