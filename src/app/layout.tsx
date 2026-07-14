@@ -83,7 +83,7 @@ export default function RootLayout({
 
        <script 
    src="http://localhost:3000/chatBot.js"
-   data-owner-id = "usr_128171791054013555"
+   data-owner-id = "usr_128027691713561090"
    ></script> 
 
       </body>
